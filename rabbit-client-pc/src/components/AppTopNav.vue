@@ -1,4 +1,4 @@
-  <template>
+<template>
   <nav class="app-top-nav">
     <div class="container">
       <ul>
@@ -36,8 +36,8 @@ export default {
     //要获取vuex中state的某个模块具体值时,需要使用computed来变成响应式
     // const user = store.state.user;
     const token = computed(() => store.state.user.profile.token);
-    const account = computed(() => store.state.user.profile.account)
-    return { token , account };
+    const account = computed(() => store.state.user.profile.account);
+    return { token, account };
   },
 };
 </script>

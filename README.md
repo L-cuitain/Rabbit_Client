@@ -26,7 +26,9 @@
 
 ## 项目构建
 @vue/cli:vue脚手架
+
 style-resources-loader:less文件自动注入
+
 @vueuse/core:工具库 实现吸顶导航
 
 ## 项目运行

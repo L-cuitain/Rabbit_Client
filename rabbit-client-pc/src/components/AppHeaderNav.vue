@@ -4,13 +4,25 @@
       <RouterLink to="/">首页</RouterLink>
     </li>
     <!-- 一级分类 -->
-    <li @mouseenter="open(topCategory.id)" @mouseleave="close(topCategory.id)" v-for="topCategory in category.list" :key="topCategory.id">
-      <RouterLink @click="close(topCategory.id)" :to="`/category/${topCategory.id}`">{{ topCategory.name }}</RouterLink>
+    <li
+      @mouseenter="open(topCategory.id)"
+      @mouseleave="close(topCategory.id)"
+      v-for="topCategory in category.list"
+      :key="topCategory.id"
+    >
+      <RouterLink
+        @click="close(topCategory.id)"
+        :to="`/category/${topCategory.id}`"
+        >{{ topCategory.name }}</RouterLink
+      >
       <!-- 二级分类 -->
       <div class="layer" :class="{ open: topCategory.open }">
         <ul>
           <li v-for="subCategory in topCategory.children" :key="subCategory.id">
-            <RouterLink @click="close(topCategory.id)" :to="`/category/sub/${subCategory.id}`">
+            <RouterLink
+              @click="close(topCategory.id)"
+              :to="`/category/sub/${subCategory.id}`"
+            >
               <img :src="subCategory.picture" :alt="subCategory.name" />
               <p>{{ subCategory.name }}</p>
             </RouterLink>
@@ -33,12 +45,12 @@ export default {
     const category = store.state.category;
 
     //二级分类显示和隐藏
-    const open = (id) => store.commit('category/open',id);
+    const open = (id) => store.commit("category/open", id);
 
-    const close = (id) => store.commit('category/close',id);
+    const close = (id) => store.commit("category/close", id);
 
     // 返回组件所需状态
-    return { category , open , close };
+    return { category, open, close };
   },
 };
 </script>

@@ -1,40 +1,40 @@
 <template>
   <!-- 吸顶导航组件 -->
-  <div class="app-header-sticky" :class="{show: scrollTop > 78}">
+  <div class="app-header-sticky" :class="{ show: scrollTop > 78 }">
     <div class="container" v-show="scrollTop > 78">
       <RouterLink to="/" class="logo" />
       <AppHeaderNav>
-          <div class="right">
-              <RouterLink to="/">品牌</RouterLink>
-              <RouterLink to="/">专题</RouterLink>
-          </div>
+        <div class="right">
+          <RouterLink to="/">品牌</RouterLink>
+          <RouterLink to="/">专题</RouterLink>
+        </div>
       </AppHeaderNav>
     </div>
   </div>
 </template>
 
 <script>
-import AppHeaderNav from '@/components/AppHeaderNav';
+import AppHeaderNav from "@/components/AppHeaderNav";
 
 //引入自己封装的浏览器滚动高度
 // import useScrollTop from '@/hooks/useScrollTop';
 
 //引入工具库 获取浏览器滚动高度
-import { useWindowScroll } from '@vueuse/core';
+import { useWindowScroll } from "@vueuse/core";
 
 export default {
-    name: 'AppHeaderSticky',
-    components:{
-        AppHeaderNav
-    },
-    setup(){
-        //获取高度
-        const { y: scrollTop } = useWindowScroll();
+  name: "AppHeaderSticky",
+  components: {
+    AppHeaderNav,
+  },
+  setup() {
+    //获取高度
+    const { y: scrollTop } = useWindowScroll();
 
-        return {
-            scrollTop
-        }
-    }
+    return {
+      scrollTop,
+    };
+  },
 };
 </script>
 

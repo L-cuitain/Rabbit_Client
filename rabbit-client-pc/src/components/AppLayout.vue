@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { useStore } from 'vuex';
+import { useStore } from "vuex";
 
 import AppTopNav from "@/components/AppTopNav";
 import AppHeader from "@/components/AppHeader";
@@ -22,14 +22,14 @@ export default {
     AppTopNav,
     AppHeader,
     AppFooter,
-    AppHeaderSticky
+    AppHeaderSticky,
   },
-  setup(){
-        //获取store对象
-        const store = useStore();
-        //发送请求获取分类数据
-        store.dispatch("category/getCategories");
-    }
+  setup() {
+    //获取store对象
+    const store = useStore();
+    //发送请求获取分类数据
+    store.dispatch("category/getCategories");
+  },
 };
 </script>
 

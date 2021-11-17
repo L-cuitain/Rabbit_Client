@@ -1,5 +1,4 @@
 <template>
-  <!-- 左侧分类组件 -->
   <div class="home-category" @mouseleave="current = null">
     <!--    可选链操作符
            current?.id
@@ -14,7 +13,6 @@
         :key="topCategory.id"
       >
         <RouterLink to="/">{{ topCategory.name }}</RouterLink>
-        <!--        一级分类模版-->
         <template v-if="topCategory.children">
           <RouterLink
             to="/"
@@ -106,7 +104,7 @@ function useMenuList() {
     //截取一级分类中的二级分类个数
     const result = store.state.category.list.map((item) => ({
       ...item,
-      children: item.children ? item.children.slice(0, 2) : [],
+      children: item.children ? item.children.slice(0, 2) : null,
     }));
     //向分类列表中添加品牌
     result.push(brand.value);
@@ -119,6 +117,7 @@ function useMenuList() {
 }
 
 export default {
+  //左侧分类组件
   name: "HomeCategory",
   setup() {
     //调用useMenuList函数

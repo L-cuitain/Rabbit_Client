@@ -5,8 +5,8 @@ const HomePage = () =>
   import(/*webpackChunkName: 'HomePage'*/ "@/views/home/HomePage");
 
 //引入一级分类和二级分类
-import TopCategoryPage from '@/views/category/TopCategoryPage';
-import SubCategoryPage from '@/views/category/SubCategoryPage';
+import TopCategoryPage from "@/views/category/TopCategoryPage";
+import SubCategoryPage from "@/views/category/SubCategoryPage";
 
 const routes = [
   {
@@ -15,12 +15,12 @@ const routes = [
   },
   {
     path: "/category/:id",
-    components: TopCategoryPage
+    components: TopCategoryPage,
   },
   {
     path: "/category/sub/:id",
-    components: SubCategoryPage
-  }
+    components: SubCategoryPage,
+  },
 ];
 
 const router = createRouter({

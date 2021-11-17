@@ -2,7 +2,7 @@
 //导入用户发送请求的底层库
 import axios from "axios";
 import store from "../store";
-import router from '../router'
+import router from "../router";
 
 //导出基准地址
 export const baseURL = "http://pcapi-xiaotuxian-front-devtest.itheima.net/";

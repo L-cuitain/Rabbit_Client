@@ -6,8 +6,8 @@ import request from "@/utils/request";
  * @property {string} name - 分类名称
  * @property {string} picture - 分类封面图片
  * @property {Category} children - 子级分类对象
- * @property {RecommendGoods} goods - 该分类下的推荐商品 
-*/
+ * @property {RecommendGoods} goods - 该分类下的推荐商品
+ */
 
 /**
  * @typedef {object} RecommendGoods 推荐商品
@@ -24,6 +24,6 @@ import request from "@/utils/request";
  * 获取分类列表
  * @return {Promise<{result: Array<Category>}>}
  */
-export function getCategoriesReq(){
-    return request("/home/category/head","get");
+export function getCategoriesReq() {
+  return request("/home/category/head", "get");
 }

@@ -19,13 +19,13 @@
 </template>
 
 <script>
-import AppHeaderNav from '@/components/AppHeaderNav';
+import AppHeaderNav from "@/components/AppHeaderNav";
 
 export default {
   name: "AppHeader",
   components: {
-    AppHeaderNav
-  }
+    AppHeaderNav,
+  },
 };
 </script>
 
