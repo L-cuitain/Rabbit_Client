@@ -1,5 +1,4 @@
 <template>
-  <!--  查看更多-->
   <RouterLink :to="path" class="xtx-more">
     <span>查看全部</span>
     <i class="iconfont icon-angle-right"></i>
@@ -8,6 +7,7 @@
 
 <script>
 export default {
+  // 查看更多
   name: "XtxMore",
   props: {
     path: {

@@ -1,25 +1,24 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 
 //引入HomePage
-const HomePage = () =>
-  import(/*webpackChunkName: 'HomePage'*/ "@/views/home/HomePage");
+const HomePage = () => import("@/views/home/HomePage");
 
 //引入一级分类和二级分类
-import TopCategoryPage from "@/views/category/TopCategoryPage";
-import SubCategoryPage from "@/views/category/SubCategoryPage";
+const TopCategoryPage = () => import("@/views/category/TopCategoryPage");
+const SubCategoryPage = () => import("@/views/category/SubCategoryPage");
 
 const routes = [
   {
     path: "/",
-    components: HomePage,
+    component: HomePage,
   },
   {
     path: "/category/:id",
-    components: TopCategoryPage,
+    component: TopCategoryPage,
   },
   {
     path: "/category/sub/:id",
-    components: SubCategoryPage,
+    component: SubCategoryPage,
   },
 ];
 

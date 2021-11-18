@@ -1,5 +1,4 @@
 <template>
-  <!-- 吸顶导航组件 -->
   <div class="app-header-sticky" :class="{ show: scrollTop > 78 }">
     <div class="container" v-show="scrollTop > 78">
       <RouterLink to="/" class="logo" />
@@ -23,6 +22,7 @@ import AppHeaderNav from "@/components/AppHeaderNav";
 import { useWindowScroll } from "@vueuse/core";
 
 export default {
+  // 吸顶导航组件
   name: "AppHeaderSticky",
   components: {
     AppHeaderNav,

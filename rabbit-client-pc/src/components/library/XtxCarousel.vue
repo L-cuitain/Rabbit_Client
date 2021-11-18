@@ -1,5 +1,4 @@
 <template>
-  <!--  轮播图组件 基础布局-->
   <div
     class="xtx-carousel"
     @mouseenter="stopAutoPlay"
@@ -38,6 +37,7 @@
 import { onMounted, onUnmounted, ref } from "vue";
 
 export default {
+  // 轮播图组件 基础布局
   name: "XtxCarousel",
   props: {
     carousels: {
