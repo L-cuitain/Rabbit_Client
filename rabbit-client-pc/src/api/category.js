@@ -27,3 +27,21 @@ import request from "@/utils/request";
 export function getCategoriesReq() {
   return request("/home/category/head", "get");
 }
+
+/**
+ * 根据一级分类id获取一级分类下的具体信息
+ * @param id 一级分类ID
+ * @returns {*|AxiosPromise}
+ */
+export function getTopCategoryById(id) {
+  return request("/category", "get", { id });
+}
+
+/**
+ * 根据二级分类id获取筛选条件
+ * @param id 二级分类id
+ * @returns {Promise}
+ */
+export function getSubCategoryFilterById(id) {
+  return request("/category/sub/filter", "get", { id });
+}

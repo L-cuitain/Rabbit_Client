@@ -24,6 +24,10 @@ const routes = [
 
 const router = createRouter({
   history: createWebHashHistory(),
+  //让页面切换后重新回到顶部
+  scrollBehavior() {
+    return { top: 0 };
+  },
   routes,
 });
 

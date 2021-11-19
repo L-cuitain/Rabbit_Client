@@ -16,6 +16,8 @@
         :subCategories="topCategory.children"
         v-if="topCategory"
       />
+      <!--      推荐商品-->
+      <RecommendGoods></RecommendGoods>
     </div>
   </AppLayout>
 </template>
@@ -29,6 +31,7 @@ import { computed } from "vue";
 import AppLayout from "@/components/AppLayout";
 import XtxBread from "@/components/library/XtxBread";
 import ShowSubCategoryList from "@/views/category/components/ShowSubCategoryList";
+import RecommendGoods from "@/views/category/components/RecommendGoods";
 
 import useBanners from "@/hooks/useBanners";
 
@@ -54,6 +57,7 @@ export default {
     AppLayout,
     XtxBread,
     ShowSubCategoryList,
+    RecommendGoods,
   },
   setup() {
     //获取面包屑导航

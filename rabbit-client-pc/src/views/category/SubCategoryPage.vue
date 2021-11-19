@@ -3,7 +3,7 @@
     <div class="container">
       <XtxBread>
         <XtxBreadItem path="/">首页</XtxBreadItem>
-        <XtxBreadItem :path="`/category/${category?.TopCategory.id}`">{{
+        <XtxBreadItem :path="`/category/${category?.TopCategory?.id}`">{{
           category?.TopCategory?.name
         }}</XtxBreadItem>
         <Transition name="fade-right" mode="out-in">
@@ -16,6 +16,9 @@
           }}</XtxBreadItem>
         </Transition>
       </XtxBread>
+
+      <!--      筛选商品列表-->
+      <SubFilter @onFilterParamsChanged="onParamsChanged" />
     </div>
   </AppLayout>
 </template>
@@ -27,6 +30,7 @@ import { computed } from "vue";
 
 import AppLayout from "@/components/AppLayout";
 import XtxBread from "@/components/library/XtxBread";
+import SubFilter from "@/views/category/components/SubFilter";
 
 //渲染面包屑
 function useBread() {
@@ -64,9 +68,16 @@ export default {
   components: {
     AppLayout,
     XtxBread,
+    SubFilter,
   },
   setup() {
-    return { category: useBread() };
+    //获取用户选择的筛选条件
+    const onParamsChanged = (target) => {
+      console.log(target);
+    };
+    //获取category
+    const category = useBread();
+    return { category, onParamsChanged };
   },
 };
 </script>
