@@ -19,6 +19,11 @@
 
       <!--      筛选商品列表-->
       <SubFilter @onFilterParamsChanged="onParamsChanged" />
+      <!--      商品区块-->
+      <div class="goods-list">
+        <!--      排序组件-->
+        <SubSort />
+      </div>
     </div>
   </AppLayout>
 </template>
@@ -31,6 +36,7 @@ import { computed } from "vue";
 import AppLayout from "@/components/AppLayout";
 import XtxBread from "@/components/library/XtxBread";
 import SubFilter from "@/views/category/components/SubFilter";
+import SubSort from "@/views/category/components/SubSort";
 
 //渲染面包屑
 function useBread() {
@@ -69,6 +75,7 @@ export default {
     AppLayout,
     XtxBread,
     SubFilter,
+    SubSort,
   },
   setup() {
     //获取用户选择的筛选条件
@@ -82,4 +89,10 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped lang="less">
+.goods-list {
+  background: #fff;
+  padding: 0 25px;
+  margin-top: 25px;
+}
+</style>
