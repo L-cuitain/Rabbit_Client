@@ -6,6 +6,7 @@
         <a
           href="javascript:"
           v-for="brand in filters.brands"
+          :class="{ active: filters.selectedBrandId === brand.id }"
           :key="brand.id"
           @click="
             filters.selectedBrandId = brand.id;
@@ -20,6 +21,7 @@
       <div class="body">
         <a
           v-for="property in item.properties"
+          :class="{ active: property.name === item.selectedFilterName }"
           :key="property.id"
           @click="
             item.selectedFilterName = property.name;

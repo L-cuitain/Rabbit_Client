@@ -45,3 +45,12 @@ export function getTopCategoryById(id) {
 export function getSubCategoryFilterById(id) {
   return request("/category/sub/filter", "get", { id });
 }
+
+/**
+ * 获取商品列表
+ * @param params 分类ID，筛选条件，排序条件，分页信息
+ * @returns {Promise}
+ */
+export function getGoodsReq(params) {
+  return request("/category/goods", "post", params);
+}
