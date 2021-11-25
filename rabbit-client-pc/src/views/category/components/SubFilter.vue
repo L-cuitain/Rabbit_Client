@@ -75,7 +75,7 @@ function useSubCategoryFilter(emit) {
     attrs: [],
   };
 
-  //用于更新用于选择的筛选条件
+  //更新用于选择的筛选条件
   const updateSelectedFilters = () => {
     //更新用户选择的品牌id
     selectedFilters.brandId = filters.value.selectedBrandId;

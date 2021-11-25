@@ -7,6 +7,9 @@ const HomePage = () => import("@/views/home/HomePage");
 const TopCategoryPage = () => import("@/views/category/TopCategoryPage");
 const SubCategoryPage = () => import("@/views/category/SubCategoryPage");
 
+//引入商品详情
+const GoodsDetailPage = () => import("@/views/goods/GoodsDetailPage");
+
 const routes = [
   {
     path: "/",
@@ -19,6 +22,10 @@ const routes = [
   {
     path: "/category/sub/:id",
     component: SubCategoryPage,
+  },
+  {
+    path: "/goods/:id",
+    component: GoodsDetailPage,
   },
 ];
 
