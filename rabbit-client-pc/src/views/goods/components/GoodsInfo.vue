@@ -12,7 +12,7 @@
     </dl>
     <dl>
       <dt>配送</dt>
-      <dd>至 <XtxCity /></dd>
+      <dd>至 <XtxCity @onCityChanged="onCityChanged" /></dd>
     </dl>
     <dl>
       <dt>服务</dt>
@@ -36,6 +36,13 @@ export default {
       type: Object,
       default: () => ({}),
     },
+  },
+  setup() {
+    //当用户选择城市信息以后调用
+    const onCityChanged = (data) => {
+      console.log(data);
+    };
+    return { onCityChanged };
   },
 };
 </script>

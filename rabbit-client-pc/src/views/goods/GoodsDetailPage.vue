@@ -24,6 +24,7 @@
           <!-- 右侧 -->
           <div class="spec">
             <GoodsInfo :goods="goodsDetail" />
+            <GoodsSku :specs="goodsDetail.specs" :skus="goodsDetail.skus" />
           </div>
         </div>
         <!-- 商品推荐 -->
@@ -53,6 +54,7 @@ import GoodsSales from "@/views/goods/components/GoodsSales";
 import GoodsRelevant from "@/views/goods/components/GoodsRelevant";
 import AppLayout from "@/components/AppLayout";
 import GoodsImages from "@/views/goods/components/GoodsImages";
+import GoodsSku from "@/views/goods/components/GoodsSku";
 
 //引入api接口函数
 import { getGoodsDetail } from "@/api/goods";
@@ -65,6 +67,7 @@ export default {
     AppLayout,
     GoodsSales,
     GoodsInfo,
+    GoodsSku,
   },
   setup() {
     //引入路由参数

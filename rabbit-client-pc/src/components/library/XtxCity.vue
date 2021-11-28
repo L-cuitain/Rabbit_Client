@@ -1,15 +1,19 @@
 <template>
   <div class="xtx-city" ref="target">
-    <div class="select" @click="toggle" :class="{ active: visible }">
-      <span class="placeholder">请选择配送地址</span>
-      <span class="value"></span>
+    <div class="select" @click="toggle">
+      <span class="placeholder" v-if="!location">请选择配送地址</span>
+      <span class="value" v-else>{{ location }}</span>
       <i class="iconfont icon-angle-down"></i>
     </div>
     <div class="option" v-if="visible">
       <template v-if="cityData">
-        <span class="ellipsis" v-for="item in cityData" :key="item.id">{{
-          item.name
-        }}</span>
+        <span
+          class="ellipsis"
+          v-for="item in list"
+          :key="item.code"
+          @click="selectCityData(item)"
+          >{{ item.name }}</span
+        >
       </template>
       <template v-else>
         <div class="loading"></div>
@@ -19,29 +23,77 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, reactive, computed } from "vue";
 import { onClickOutside } from "@vueuse/core";
 import axios from "axios";
 
 export default {
   name: "XtxCity",
-  setup() {
+  setup(props, { emit }) {
     // 用于存储用户选择的城市数据
-    // const selectedCityData = reactive({
-    //   provinceCode: "",
-    //   cityCode: "",
-    //   countyCode: "",
-    //   provinceName: "",
-    //   cityName: "",
-    //   countyName: "",
-    //   location: "",
-    // });
+    const selectedCityData = reactive({
+      provinceCode: "",
+      cityCode: "",
+      countyCode: "",
+      provinceName: "",
+      cityName: "",
+      countyName: "",
+    });
     //控制下拉菜单是否显示
     const visible = ref(false);
     //用于获取下拉框元素
     const target = ref(null);
     //用于存储城市数据
     const cityData = ref(null);
+    //用于展示用户选择的省市级数据
+    const location = ref("");
+    //用于供用户选择城市数据的方法
+    const selectCityData = (data) => {
+      //存储省级数据
+      if (data.level === 0) {
+        selectedCityData.provinceCode = data.code;
+        selectedCityData.provinceName = data.name;
+      } else if (data.level === 1) {
+        //存储市级数据
+        selectedCityData.cityCode = data.code;
+        selectedCityData.cityName = data.name;
+      } else {
+        //存储县区级数据
+        selectedCityData.countyCode = data.code;
+        selectedCityData.countyName = data.name;
+      }
+    };
+    //用于在组件中显示的城市数据
+    const list = computed(() => {
+      //默认返回省级数据
+      let list = cityData.value;
+      //如果用户选择了省级数据
+      if (selectedCityData.provinceCode) {
+        //将数据更新为市级数据
+        list = list.find(
+          (province) => province.code === selectedCityData.provinceCode
+        ).areaList;
+      }
+
+      //如果用户选择了市级数据
+      if (selectedCityData.cityCode) {
+        //将数据替换为县区级数据
+        list = list.find(
+          (city) => city.code === selectedCityData.cityCode
+        ).areaList;
+      }
+
+      //如果用户选择了县区级数据
+      if (selectedCityData.countyCode) {
+        //将用户选择的数据传递到组件外部
+        emit("onCityChanged", { ...selectedCityData });
+        //重置组件需要城市数据
+        list = cityData.value;
+        //隐藏弹框
+        hide();
+      }
+      return list;
+    });
     //显示下拉菜单
     const show = () => {
       //获取城市数据
@@ -55,6 +107,15 @@ export default {
     //隐藏下拉菜单
     const hide = () => {
       visible.value = false;
+      //判断用户是否选择完整数据
+      if (selectedCityData.countyName) {
+        //拼接数据
+        location.value = `${selectedCityData.provinceName} ${selectedCityData.cityName} ${selectedCityData.countyName}`;
+      }
+      //重置用户选择的城市数据
+      for (const attr in selectedCityData) {
+        selectedCityData[attr] = "";
+      }
     };
     //切换下拉菜单的显示和隐藏
     const toggle = () => {
@@ -66,7 +127,15 @@ export default {
       hide();
     });
 
-    return { visible, cityData, toggle, target };
+    return {
+      visible,
+      cityData,
+      toggle,
+      target,
+      list,
+      selectCityData,
+      location,
+    };
   },
 };
 
