@@ -124,14 +124,11 @@ function useGoods() {
       //更新加载状态
       loading.value = false;
 
-      //判断goodsList是否为空
-      if (goodsList.value.length < 0) {
-        //所有数据加载完成
-        finished.value = true;
-      }
-
       //如果当前页已经是最后一页
-      if (reqParams.value.page === data.result.pages) {
+      if (
+        reqParams.value.page === data.result.pages ||
+        data.result.pages === 0
+      ) {
         //所有数据加载完成
         finished.value = true;
       }

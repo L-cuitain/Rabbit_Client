@@ -27,8 +27,12 @@
             <GoodsSku
               :specs="goodsDetail.specs"
               :skus="goodsDetail.skus"
-              skuId="1369155864430120962"
               @onSpecChanged="onSpecChanged"
+            />
+            <XtxNumberBox
+              label="数量"
+              :max="goodsDetail.inventory"
+              v-model="count"
             />
           </div>
         </div>
@@ -63,10 +67,12 @@ import GoodsSku from "@/views/goods/components/GoodsSku";
 
 //引入api接口函数
 import { getGoodsDetail } from "@/api/goods";
+import XtxNumberBox from "@/components/library/XtxNumberBox";
 
 export default {
   name: "GoodsDetailPage",
   components: {
+    XtxNumberBox,
     GoodsImages,
     GoodsRelevant,
     AppLayout,
@@ -75,6 +81,8 @@ export default {
     GoodsSku,
   },
   setup() {
+    //存储用户选择的商品
+    const count = ref();
     //引入路由参数
     const route = useRoute();
     //获取方法返回参数
@@ -89,7 +97,7 @@ export default {
     };
 
     //返回
-    return { goodsDetail, onSpecChanged };
+    return { count, goodsDetail, onSpecChanged };
   },
 };
 
