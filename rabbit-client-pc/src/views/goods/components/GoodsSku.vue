@@ -38,8 +38,13 @@ export default {
       type: Array,
       default: () => [],
     },
+    //商品id
+    skuId: {
+      type: String,
+      default: "",
+    },
   },
-  setup(props) {
+  setup(props, { emit }) {
     const pathMap = createPathMap(props.skus);
     console.log(pathMap);
     //更新规格的选中状态
@@ -59,9 +64,16 @@ export default {
         value.selected = true;
       }
 
-      //初始化时更新规格按钮的禁选效果
+      //更新规格组件
       updateSpecDisabled(props.specs, pathMap);
+      //更新规格时传递规格参数给父组件
+      sendSkusToParent(pathMap, props.skus, props.specs, emit);
     };
+
+    //初始化时更新规格按钮的禁选效果
+    updateSpecDisabled(props.specs, pathMap);
+    //设置默认
+    setDefaultSelected(props.skuId, props.skus, props.specs);
 
     return { updateSpecSelected };
   },
@@ -116,7 +128,6 @@ function getUserSelected(specs) {
       result[index] = undefined;
     }
   });
-
   return result;
 }
 
@@ -138,6 +149,57 @@ function updateSpecDisabled(specs, pathMap) {
       value.disabled = !(key in pathMap);
     });
   });
+}
+
+//设置默认选中的规格组件
+function setDefaultSelected(skuId, skus, specs) {
+  //skuId 规格ID
+  //specs 即将被设置状态的数据
+  //skus 当前商品所有可组合的规格集合
+
+  //如果在调用当前组件时没有传递规格id
+  if (!skuId) {
+    return;
+  }
+
+  //从所有可组合的规格集合数组中查找当前要默认选中的规格对象
+  const target = skus.find((sku) => sku.id === skuId);
+  //将要选中的规格名字存储到数组中
+  const names = target.specs.map((spec) => spec.valueName);
+  //遍历页面中渲染的供用户选择的规格数据
+  specs.forEach((spec) => {
+    spec.values.forEach((value) => {
+      //如果当前遍历的规格名字在 names 数组中
+      if (names.includes(value.name)) {
+        //设置当前规格的选中效果
+        value.selected = true;
+      }
+    });
+  });
+}
+
+//将用户选择的规格传递给父组件
+function sendSkusToParent(pathMap, skus, specs, emit) {
+  //获取用户选择的规格
+  const selected = getUserSelected(specs).filter((item) => item);
+  //判断用户选择的规格是否完整 如果是完整才需要将数据传递到组件
+  if (selected.length === specs.length) {
+    //获取规格id
+    const skuId = pathMap[selected.join("_")];
+    //根据 skuId 在所有可组合的规格集合中查找规格对象
+    const target = skus.find((sku) => sku.id === skuId);
+    //将规格数据传递到父组件
+    emit("onSpecChanged", {
+      //商品的规格ID，将商品加入购物车时使用
+      skuId,
+      //商品的现价(更新视图)
+      price: target.price,
+      //商品原价(更新视图)
+      oldPrice: target.oldPrice,
+      //商品的库存，在用户选择商品数量时使用
+      inventory: target.inventory,
+    });
+  }
 }
 </script>
 

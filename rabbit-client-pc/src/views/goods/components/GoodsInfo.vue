@@ -3,7 +3,7 @@
   <p class="g-desc">{{ goods.desc }}</p>
   <p class="g-price">
     <span>{{ goods.price }}</span>
-    <span>{{ goods.oldPirce }}</span>
+    <span>{{ goods.oldPrice }}</span>
   </p>
   <div class="g-service">
     <dl>

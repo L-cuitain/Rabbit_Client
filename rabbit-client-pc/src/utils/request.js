@@ -4,8 +4,11 @@ import axios from "axios";
 import store from "../store";
 import router from "../router";
 
+// 线上环境: https://apipc-xiaotuxian-front.itheima.net/
+// 开发环境: http://pcapi-xiaotuxian-front-devtest.itheima.net/
+
 //导出基准地址
-export const baseURL = "http://pcapi-xiaotuxian-front-devtest.itheima.net/";
+export const baseURL = "https://apipc-xiaotuxian-front.itheima.net/";
 
 //创建请求实例对象(不包含token)
 const instanceWithoutToken = axios.create({ baseURL });

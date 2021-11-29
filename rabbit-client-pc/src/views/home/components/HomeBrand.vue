@@ -16,19 +16,19 @@
     </template>
     <template v-slot:list>
       <div class="box">
+        <ul
+          class="list"
+          :style="{ transform: `translateX(${-currentIndex * 1240}px)` }"
+          v-if="brands"
+        >
+          <li v-for="brand in brands" :key="brand.id">
+            <RouterLink to="/">
+              <img :src="brand.picture" :alt="brand.name" />
+            </RouterLink>
+          </li>
+        </ul>
         <Transition name="fade">
-          <ul
-            class="list"
-            :style="{ transform: `translateX(${-currentIndex * 1240}px)` }"
-            v-if="brands"
-          >
-            <li v-for="brand in brands" :key="brand.id">
-              <RouterLink to="/">
-                <img :src="brand.picture" :alt="brand.name" />
-              </RouterLink>
-            </li>
-          </ul>
-          <div v-else class="skeleton">
+          <div v-if="!brands" class="skeleton">
             <XtxSkeleton
               class="item"
               v-for="i in 5"
@@ -136,6 +136,7 @@ export default {
 .skeleton {
   width: 100%;
   display: flex;
+  top: 115px;
   .item {
     margin-right: 10px;
     &:nth-child(5n) {

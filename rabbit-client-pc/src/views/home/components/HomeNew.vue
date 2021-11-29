@@ -4,17 +4,17 @@
       <XtxMore />
     </template>
     <template v-slot:list>
+      <ul class="goods-list" v-if="goods">
+        <li v-for="item in goods" :key="item.id">
+          <RouterLink to="/">
+            <img :src="item.picture" alt="" />
+            <p class="name ellipsis">{{ item.name }}</p>
+            <p class="price">&yen;{{ item.price }}</p>
+          </RouterLink>
+        </li>
+      </ul>
       <Transition name="fade">
-        <ul class="goods-list" v-if="goods">
-          <li v-for="item in goods" :key="item.id">
-            <RouterLink to="/">
-              <img :src="item.picture" alt="" />
-              <p class="name ellipsis">{{ item.name }}</p>
-              <p class="price">&yen;{{ item.price }}</p>
-            </RouterLink>
-          </li>
-        </ul>
-        <HomeSkeleton v-else />
+        <HomeSkeleton v-if="!goods" />
       </Transition>
     </template>
   </HomePanel>
@@ -68,5 +68,8 @@ export default {
       color: @priceColor;
     }
   }
+}
+.home-skeleton {
+  top: 115px;
 }
 </style>

@@ -24,7 +24,12 @@
           <!-- 右侧 -->
           <div class="spec">
             <GoodsInfo :goods="goodsDetail" />
-            <GoodsSku :specs="goodsDetail.specs" :skus="goodsDetail.skus" />
+            <GoodsSku
+              :specs="goodsDetail.specs"
+              :skus="goodsDetail.skus"
+              skuId="1369155864430120962"
+              @onSpecChanged="onSpecChanged"
+            />
           </div>
         </div>
         <!-- 商品推荐 -->
@@ -71,24 +76,36 @@ export default {
   },
   setup() {
     //引入路由参数
-    const router = useRoute();
+    const route = useRoute();
     //获取方法返回参数
     const { goodsDetail, getData } = useGoodsDetail();
     //请求接口函数
-    getData(router.params.id);
+    getData(route.params.id);
+    //当用户选择完整规格后 更新视图
+    const onSpecChanged = (data) => {
+      goodsDetail.value.price = data.price;
+      goodsDetail.value.oldPrice = data.oldPrice;
+      goodsDetail.value.inventory = data.inventory;
+    };
+
     //返回
-    return { goodsDetail };
+    return { goodsDetail, onSpecChanged };
   },
 };
 
+// 用于获取商品详细信息的方法
 function useGoodsDetail() {
-  //接受请求参数
+  // 用于存储商品详情信息
   const goodsDetail = ref();
+  // 用于获取商品详情信息的方法
   const getData = (id) => {
+    // 向服务器端发送请求获取商品详情信息
     getGoodsDetail(id).then((data) => {
+      // 用于存储商品详情信息
       goodsDetail.value = data.result;
     });
   };
+  // 返回商品详情数据和获取商品详情数据的方法
   return { goodsDetail, getData };
 }
 </script>

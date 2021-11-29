@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { ref, watch } from "vue";
+import { ref, watch, onUpdated } from "vue";
 import { useRoute, onBeforeRouteUpdate } from "vue-router";
 import { useStore } from "vuex";
 import { computed } from "vue";
@@ -69,7 +69,9 @@ export default {
     //获取商品列表
     const { goodsList, onFilterSortChanged, loading, finished, loadMore } =
       useGoods();
-
+    onUpdated(() => {
+      console.log(goodsList.value);
+    });
     //返回数据
     return {
       category,
@@ -121,6 +123,12 @@ function useGoods() {
       }
       //更新加载状态
       loading.value = false;
+
+      //判断goodsList是否为空
+      if (goodsList.value.length < 0) {
+        //所有数据加载完成
+        finished.value = true;
+      }
 
       //如果当前页已经是最后一页
       if (reqParams.value.page === data.result.pages) {

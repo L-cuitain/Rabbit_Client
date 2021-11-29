@@ -2,17 +2,17 @@
   <!--  人气推荐-->
   <HomePanel title="人气推荐" sub-title="人气爆款 不容错过" ref="target">
     <template v-slot:list>
+      <ul class="goods-list" v-if="homeHot">
+        <li v-for="item in homeHot" :key="item.id">
+          <RouterLink to="/">
+            <img :src="item.picture" :alt="item.title" />
+            <p class="name">{{ item.title }}</p>
+            <p class="desc">{{ item.alt }}</p>
+          </RouterLink>
+        </li>
+      </ul>
       <Transition name="fade">
-        <ul class="goods-list" v-if="homeHot">
-          <li v-for="item in homeHot" :key="item.id">
-            <RouterLink to="/">
-              <img :src="item.picture" :alt="item.title" />
-              <p class="name">{{ item.title }}</p>
-              <p class="desc">{{ item.alt }}</p>
-            </RouterLink>
-          </li>
-        </ul>
-        <HomeSkeleton v-else />
+        <HomeSkeleton v-if="!homeHot" />
       </Transition>
     </template>
   </HomePanel>
@@ -64,5 +64,8 @@ export default {
       font-size: 18px;
     }
   }
+}
+.home-skeleton {
+  top: 115px;
 }
 </style>
