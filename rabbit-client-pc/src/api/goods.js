@@ -8,3 +8,24 @@ import request from "@/utils/request";
 export function getGoodsDetail(id) {
   return request("/goods", "get", { id });
 }
+
+/**
+ * 获取同类商品或猜你喜欢
+ * @param id 商品id
+ * @param limit 限制请求数据的数量
+ * @returns {Promise}
+ */
+export function getRelevantGoods({ id, limit }) {
+  return request("/goods/relevant", "get", { id, limit });
+}
+
+/**
+ * 获取榜单数据
+ * @param id 商品ID
+ * @param limit 一次请求的数据数量
+ * @param type 热销类型
+ * @returns {Promise}
+ */
+export function getHotGoods({ id, limit = 3, type }) {
+  return request("/goods/hot", "get", { id, limit, type });
+}

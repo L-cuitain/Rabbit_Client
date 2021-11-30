@@ -8,7 +8,7 @@ import router from "../router";
 // 开发环境: http://pcapi-xiaotuxian-front-devtest.itheima.net/
 
 //导出基准地址
-export const baseURL = "https://apipc-xiaotuxian-front.itheima.net/";
+export const baseURL = "http://pcapi-xiaotuxian-front-devtest.itheima.net/";
 
 //创建请求实例对象(不包含token)
 const instanceWithoutToken = axios.create({ baseURL });

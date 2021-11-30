@@ -34,20 +34,27 @@
               :max="goodsDetail.inventory"
               v-model="count"
             />
+            <XtxButton type="primary" :style="{ 'margin-top': '20px' }"
+              >加入购物车</XtxButton
+            >
           </div>
         </div>
         <!-- 商品推荐 -->
-        <GoodsRelevant></GoodsRelevant>
+        <GoodsRelevant :goodsId="goodsId" />
         <!-- 商品详情 -->
         <div class="goods-footer">
           <div class="goods-article">
             <!-- 商品+评价 -->
-            <div class="goods-tabs"></div>
+            <GoodsTab />
             <!-- 注意事项 -->
-            <div class="goods-warn"></div>
+            <GoodsWarn />
           </div>
           <!-- 24热榜 -->
-          <div class="goods-aside"></div>
+          <div class="goods-aside">
+            <GoodsHot :type="1" />
+            <GoodsHot :type="2" />
+            <GoodsHot :type="3" />
+          </div>
         </div>
       </div>
     </div>
@@ -55,7 +62,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, provide } from "vue";
 import { useRoute } from "vue-router";
 //引入组件
 import GoodsInfo from "@/views/goods/components/GoodsInfo";
@@ -68,10 +75,18 @@ import GoodsSku from "@/views/goods/components/GoodsSku";
 //引入api接口函数
 import { getGoodsDetail } from "@/api/goods";
 import XtxNumberBox from "@/components/library/XtxNumberBox";
+import XtxButton from "@/components/library/XtxButton";
+import GoodsTab from "@/views/goods/components/GoodsTab";
+import GoodsHot from "@/views/goods/components/GoodsHot";
+import GoodsWarn from "@/views/goods/components/GoodsWarn";
 
 export default {
   name: "GoodsDetailPage",
   components: {
+    GoodsWarn,
+    GoodsHot,
+    GoodsTab,
+    XtxButton,
     XtxNumberBox,
     GoodsImages,
     GoodsRelevant,
@@ -89,15 +104,19 @@ export default {
     const { goodsDetail, getData } = useGoodsDetail();
     //请求接口函数
     getData(route.params.id);
+
+    const goodsId = route.params.id;
     //当用户选择完整规格后 更新视图
     const onSpecChanged = (data) => {
       goodsDetail.value.price = data.price;
       goodsDetail.value.oldPrice = data.oldPrice;
       goodsDetail.value.inventory = data.inventory;
     };
+    //将商品详情开放到自组件
+    provide("goodsDetail", goodsDetail);
 
     //返回
-    return { count, goodsDetail, onSpecChanged };
+    return { count, goodsDetail, onSpecChanged, goodsId };
   },
 };
 
