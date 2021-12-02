@@ -29,3 +29,29 @@ export function getRelevantGoods({ id, limit }) {
 export function getHotGoods({ id, limit = 3, type }) {
   return request("/goods/hot", "get", { id, limit, type });
 }
+
+/**
+ * 获取评价组件头部信息
+ * @param id 商品ID
+ * @returns {Promise}
+ */
+export function getCommentInfo(id) {
+  return request(
+    `https://mock.boxuegu.com/mock/1175/goods/${id}/evaluate`,
+    "get"
+  );
+}
+
+/**
+ * 获取评价列表数据
+ * @param id 商品Id
+ * @param params 商品信息
+ * @returns {Promise}
+ */
+export function getCommentList(id, params) {
+  return request(
+    `https://mock.boxuegu.com/mock/1175/goods/${id}/evaluate/page`,
+    "get",
+    params
+  );
+}
