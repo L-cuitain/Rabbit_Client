@@ -1,28 +1,58 @@
 <template>
   <div class="xtx-pagination">
-    <a href="javascript:">上一页</a>
-    <span>...</span>
-    <a href="javascript:">3</a>
-    <a href="javascript:">4</a>
-    <a href="javascript:" class="active">5</a>
-    <a href="javascript:">6</a>
-    <a href="javascript:">7</a>
-    <span>...</span>
-    <a href="javascript:">下一页</a>
+    <a
+      v-if="currentPage > 1"
+      href="javascript:"
+      @click="currentPage = currentPage - 1"
+      >上一页</a
+    >
+    <span v-if="pageInfo.start > 1">...</span>
+    <a
+      href="javascript:"
+      v-for="item in pageInfo.pageNumberArray"
+      :key="item"
+      @click="currentPage = item"
+      :class="{ active: item === currentPage }"
+      >{{ item }}</a
+    >
+
+    <span v-if="pageInfo.end < pageInfo.totalPage">...</span>
+    <a
+      v-if="currentPage < pageInfo.totalPage"
+      href="javascript:"
+      @click="currentPage = currentPage + 1"
+      >下一页</a
+    >
   </div>
 </template>
 <script>
-import { computed, ref } from "vue";
+import { computed } from "vue";
+import { useVModel } from "@vueuse/core";
 
 export default {
   name: "XtxPagination",
-  setup() {
+  props: {
+    page: {
+      type: Number,
+      default: 1,
+    },
+    counts: {
+      type: Number,
+      default: 0,
+    },
+    pageSize: {
+      type: Number,
+      default: 10,
+    },
+  },
+  setup(props, { emit }) {
     //当前页
-    const currentPage = ref(5);
+    const currentPage = useVModel(props, "page", emit);
+
     //总数据条数
-    const total = ref(100);
+    const total = computed(() => props.counts);
     //每页显示数据条数
-    const pageSize = ref(10);
+    const pageSize = computed(() => props.pageSize);
     //页面中最多显示页码数量
     const pageButtonMaxNumber = 5;
     //页码偏移量
@@ -47,17 +77,17 @@ export default {
         //让显示结束页码等于总页数
         end = totalPage;
         //重新计算开始页码
-        let temp = (start = end - pageButtonMaxNumber + 1);
-        end = temp < 1 ? 1 : temp;
+        let temp = end - pageButtonMaxNumber + 1;
+        start = temp < 1 ? 1 : temp;
       }
 
       //声明存储页码的数组
       let pageNumberArray = [];
       //遍历生成页码数组
-      for (let i = start; i < end; i++) {
+      for (let i = start; i <= end; i++) {
         pageNumberArray.push(i);
       }
-      return { pageNumberArray };
+      return { pageNumberArray, totalPage, start, end };
     });
 
     return { currentPage, pageInfo };

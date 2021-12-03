@@ -10,10 +10,17 @@ const SubCategoryPage = () => import("@/views/category/SubCategoryPage");
 //引入商品详情
 const GoodsDetailPage = () => import("@/views/goods/GoodsDetailPage");
 
+//引入登录
+const LoginPage = () => import("@/views/login/LoginPage");
+
 const routes = [
   {
     path: "/",
     component: HomePage,
+  },
+  {
+    path: "/login",
+    component: LoginPage,
   },
   {
     path: "/category/:id",

@@ -86,7 +86,12 @@
         </div>
       </div>
     </div>
-    <XtxPagination />
+    <XtxPagination
+      @update:page="updateReqParams({ page: $event })"
+      v-model:page="reqParams.page"
+      :pageSize="reqParams.pageSize"
+      :counts="counts"
+    />
   </div>
 </template>
 <script>
@@ -112,6 +117,7 @@ export default {
       formatAttrs,
       updateReqParams,
       reqParams,
+      counts,
     } = useGoodsCommentList(route);
     //在商品切换时重新获取头部信息
     onBeforeRouteUpdate((to) => getData(to.params.id));
@@ -123,6 +129,7 @@ export default {
       formatAttrs,
       updateReqParams,
       reqParams,
+      counts,
     };
   },
 };
@@ -170,6 +177,8 @@ function useGoodsCommentList(route) {
     sortField: "",
   });
 
+  //总数据条数
+  const counts = ref(0);
   //更新 reqParams
   const updateReqParams = (target) => {
     //判断用户是否点击标签
@@ -193,6 +202,8 @@ function useGoodsCommentList(route) {
   const getData = (id) => {
     getCommentList(id, reqParams.value).then((data) => {
       commentList.value = data.result;
+      //存储评论数量
+      counts.value = data.result.counts;
     });
   };
 
@@ -203,7 +214,11 @@ function useGoodsCommentList(route) {
   watch(
     () => reqParams.value,
     () => getData(route.params.id),
-    { immediate: true }
+    {
+      immediate: true,
+      //深度监听
+      // deep: true
+    }
   );
   //格式化名称
   const formatNickname = (nickname) => {
@@ -220,6 +235,7 @@ function useGoodsCommentList(route) {
     formatAttrs,
     updateReqParams,
     reqParams,
+    counts,
   };
 }
 </script>
