@@ -11,6 +11,8 @@
 // 引入懒加载图片
 import lazy from "@/components/directive/lazy";
 
+import Message from "@/components/library/message";
+
 // require.context  批量导入模块
 // 1.目录  2.是否在子目录查找模块  3.通过正则匹配文件
 // 方法的返回值是一个导入函数 ， 通过这个导入函数导入组件
@@ -21,7 +23,7 @@ const keys = importFn.keys();
 export default {
   install(app) {
     app.directive("lazy", lazy);
-
+    app.config.globalProperties.$message = Message;
     // 遍历文件路径
     keys.forEach((key) => {
       // 导入组件

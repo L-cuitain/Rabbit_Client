@@ -11,11 +11,13 @@ let timer = null;
 const container = document.createElement("div");
 document.body.appendChild(container);
 
-export default function message({ type, text }) {
+export default function Message({ type, text }) {
   //将单文件组件对象转换为虚拟DOM
   const vNode = createVNode(XtxMessage, { type, text });
   //将虚拟DOM对象转换为真实DOM对象 并渲染到container中
   render(vNode, container);
+  //先清除定时器
+  clearTimeout(timer);
   //创建定时器 隐藏消息提示框
   timer = setTimeout(() => {
     // render(null, container);

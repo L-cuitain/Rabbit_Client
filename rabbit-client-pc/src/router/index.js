@@ -13,6 +13,8 @@ const GoodsDetailPage = () => import("@/views/goods/GoodsDetailPage");
 //引入登录
 const LoginPage = () => import("@/views/login/LoginPage");
 
+const LoginCallbackPage = () => import("@/views/login/LoginCallbackPage");
+
 const routes = [
   {
     path: "/",
@@ -33,6 +35,10 @@ const routes = [
   {
     path: "/goods/:id",
     component: GoodsDetailPage,
+  },
+  {
+    path: "/login/callback",
+    compnent: LoginCallbackPage,
   },
 ];
 

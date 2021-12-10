@@ -77,7 +77,13 @@
                 placeholder="请输入验证码"
                 v-model="codeField"
               />
-              <span class="code">发送验证码</span>
+              <span
+                :class="{ disabled: isActive }"
+                class="code"
+                @click="getMsgCode"
+              >
+                {{ isActive ? `剩余${count}秒` : "发送验证码" }}
+              </span>
             </div>
             <div class="error" v-if="codeError">
               <i class="iconfont icon-warning">{{ codeError }}</i>
@@ -100,10 +106,14 @@
       </template>
     </div>
     <div class="action">
-      <img
-        src="https://qzonestyle.gtimg.cn/qzone/vas/opensns/res/img/Connect_logo_7.png"
-        alt=""
-      />
+      <a
+        href="https://graph.qq.com/oauth2.0/authorize?client_id=100556005&response_type=token&scope=all&redirect_uri=http%3A%2F%2Fwww.corho.com%3A8080%2F%23%2Flogin%2Fcallback"
+      >
+        <img
+          src="https://qzonestyle.gtimg.cn/qzone/vas/opensns/res/img/Connect_logo_7.png"
+          alt=""
+        />
+      </a>
       <div class="url">
         <a href="javascript:">忘记密码</a>
         <a href="javascript:">免费注册</a>
@@ -113,6 +123,11 @@
 </template>
 <script>
 import { ref } from "vue";
+import Message from "@/components/library/message";
+import { useCountDown } from "@/hooks/useCountDown";
+
+import { loginByAccount, getMessageByMobile, loginByMobile } from "@/api/user";
+
 import {
   account,
   code,
@@ -121,6 +136,9 @@ import {
   password,
 } from "@/utils/vee-validate-schema";
 import { useForm, useField } from "vee-validate";
+
+import useLoginAfter from "@/hooks/useLoginAfter";
+
 export default {
   name: "LoginForm",
   setup() {
@@ -129,17 +147,41 @@ export default {
     //获取账号表单验证相关数据
     const { handleAccountFormSubmit, ...accountForm } =
       useAccountFormValidate();
+    const { loginSuccess, loginFail } = useLoginAfter();
     //处理账号表单登录
-    const onAccountFormSubmit = handleAccountFormSubmit((values) => {
-      console.log(values);
-    });
+    const onAccountFormSubmit = handleAccountFormSubmit(
+      ({ account, password }) => {
+        loginByAccount({ account, password })
+          .then(loginSuccess)
+          .catch(loginFail);
+      }
+    );
 
     //获取短信表单验证相关数据
-    const { handleMsgFormSubmit, ...msgForm } = useMsgFormValidate();
+    const { handleMsgFormSubmit, mobileIsValidate, ...msgForm } =
+      useMsgFormValidate();
+
+    const { count, start, isActive } = useCountDown();
+
+    //获取短信验证码
+    const getMsgCode = async () => {
+      const { isValid, mobile } = await mobileIsValidate();
+
+      if (isValid) {
+        try {
+          await getMessageByMobile(mobile);
+          Message({ type: "success", text: "验证码发送成功" });
+          //倒计时
+          start(60);
+        } catch (error) {
+          Message({ type: "error", text: "验证码发送失败" });
+        }
+      }
+    };
 
     //处理短信表单登录
-    const onMsgFormSubmit = handleMsgFormSubmit((values) => {
-      console.log(values);
+    const onMsgFormSubmit = handleMsgFormSubmit(({ mobile, code }) => {
+      loginByMobile({ mobile, code }).then(loginSuccess, loginFail);
     });
     return {
       isMsgLogin,
@@ -147,6 +189,9 @@ export default {
       onAccountFormSubmit,
       ...msgForm,
       onMsgFormSubmit,
+      count,
+      isActive,
+      getMsgCode,
     };
   },
 };
@@ -193,10 +238,20 @@ function useMsgFormValidate() {
       isAgree,
     },
   });
-  const { value: mobileField, errorMessage: mobileError } = useField("mobile");
+  const {
+    value: mobileField,
+    errorMessage: mobileError,
+    validate: mobileValidate,
+  } = useField("mobile");
   const { value: codeField, errorMessage: codeError } = useField("code");
   const { value: msgIsAgreeField, errorMessage: msgIsAgreeError } =
     useField("isAgree");
+
+  //单独验证用户是否输入手机号
+  const mobileIsValidate = async () => {
+    let { valid } = await mobileValidate();
+    return { isValid: valid, mobile: mobileField.value };
+  };
 
   return {
     mobileField,
@@ -206,6 +261,7 @@ function useMsgFormValidate() {
     msgIsAgreeField,
     msgIsAgreeError,
     handleMsgFormSubmit,
+    mobileIsValidate,
   };
 }
 </script>

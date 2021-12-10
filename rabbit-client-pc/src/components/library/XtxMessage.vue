@@ -2,7 +2,7 @@
   <transition name="down">
     <div class="xtx-message" v-show="show" :style="style[type]">
       <i class="iconfont" :class="style[type].icon"></i>
-      <span class="text">提示信息</span>
+      <span class="text">{{ text }}</span>
     </div>
   </transition>
 </template>
@@ -16,6 +16,10 @@ export default {
     type: {
       type: String,
       default: "success",
+    },
+    text: {
+      type: String,
+      default: "",
     },
   },
   setup() {
