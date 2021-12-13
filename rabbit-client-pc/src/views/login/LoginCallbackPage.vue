@@ -1,6 +1,11 @@
 <template>
   <LoginHeader>联合登录</LoginHeader>
-  <section class="container">
+  <section class="container" v-if="loading">
+    <div class="unbind">
+      <div class="loading"></div>
+    </div>
+  </section>
+  <section class="container" v-if="!loading && !isBind">
     <nav class="tab">
       <a
         :class="{ active: hasAccount }"
@@ -20,7 +25,7 @@
       </a>
     </nav>
     <div class="tab-content" v-if="hasAccount">
-      <LoginCallbackBindPhone />
+      <LoginCallbackBindPhone :unionId="unionId" />
     </div>
     <div class="tab-content" v-if="!hasAccount">
       <LoginCallbackBindPatch />
@@ -35,6 +40,10 @@ import LoginHeader from "@/views/login/components/LoginHeader";
 import LoginFooter from "@/views/login/components/LoginFooter";
 import LoginCallbackBindPhone from "@/views/login/components/LoginCallbackBindPhone";
 import LoginCallbackBindPatch from "@/views/login/components/LoginCallbackPatch";
+
+import { findAccountByQQOpenid } from "@/api/user";
+import useLoginAfter from "@/hooks/useLoginAfter";
+
 export default {
   name: "LoginCallbackPage",
   components: {
@@ -45,11 +54,41 @@ export default {
   },
   setup() {
     const hasAccount = ref(true);
+    //假设没绑定小兔鲜账号
+    const isBind = ref(false);
+    //loading状态
+    const loading = ref(false);
+    //unionId
+    const unionId = ref("");
+    //成功请求
+    const { loginSuccess } = useLoginAfter();
     //获取 qq 登录的 openId
+    const Login = window.QC.Login;
     //检测用户登录状态
-    //用access_token 向qq发送请求换取openId
+    if (Login.check()) {
+      //更新loading状态
+      loading.value = true;
+      //用access_token 向qq发送请求换取openId
+      Login.getMe((openid) => {
+        console.log(openid);
+        unionId.value = openid;
+        //向小兔鲜应用的服务器发送请求 检索账号
+        findAccountByQQOpenid({ unionId: openid })
+          .then((data) => {
+            loading.value = false;
+            isBind.value = true;
+            //如果检测到账号 跳转到首页
+            loginSuccess(data);
+          })
+          .catch(() => {
+            //如果没检测到账号 走catch方法
+            loading.value = false;
+            isBind.value = false;
+          });
+      });
+    }
 
-    return { hasAccount };
+    return { hasAccount, loading, isBind, unionId };
   },
 };
 </script>
@@ -57,6 +96,22 @@ export default {
 <style scoped lang="less">
 .container {
   padding: 25px 0;
+  position: relative;
+  height: 730px;
+  .unbind {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    padding: 25px 0;
+    z-index: 99;
+    .loading {
+      height: 100%;
+      background: #fff url(../../assets/images/load.gif) no-repeat center /
+        100px 100px;
+    }
+  }
 }
 .tab {
   background: #fff;
