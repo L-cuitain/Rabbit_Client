@@ -28,13 +28,17 @@
               :specs="goodsDetail.specs"
               :skus="goodsDetail.skus"
               @onSpecChanged="onSpecChanged"
+              @onSpecHalfChanged="goodsDetail.currentSkuId = null"
             />
             <XtxNumberBox
               label="数量"
               :max="goodsDetail.inventory"
               v-model="count"
             />
-            <XtxButton type="primary" :style="{ 'margin-top': '20px' }"
+            <XtxButton
+              type="primary"
+              :style="{ 'margin-top': '20px' }"
+              @click="addGoodsToCart"
               >加入购物车</XtxButton
             >
           </div>
@@ -79,6 +83,7 @@ import XtxButton from "@/components/library/XtxButton";
 import GoodsTab from "@/views/goods/components/GoodsTab";
 import GoodsHot from "@/views/goods/components/GoodsHot";
 import GoodsWarn from "@/views/goods/components/GoodsWarn";
+import Message from "@/components/library/message";
 
 export default {
   name: "GoodsDetailPage",
@@ -97,7 +102,7 @@ export default {
   },
   setup() {
     //存储用户选择的商品
-    const count = ref();
+    const count = ref(1);
     //引入路由参数
     const route = useRoute();
     //获取方法返回参数
@@ -111,12 +116,50 @@ export default {
       goodsDetail.value.price = data.price;
       goodsDetail.value.oldPrice = data.oldPrice;
       goodsDetail.value.inventory = data.inventory;
+      goodsDetail.value.currentSkuId = data.skuId;
+      goodsDetail.value.currentAttrsText = data.attrsText;
     };
     //将商品详情开放到自组件
     provide("goodsDetail", goodsDetail);
 
+    //将商品加入购物车
+    const addGoodsToCart = () => {
+      //判断用户是否选择规格，如果用户没有选择规格，不能加入购物车
+      if (!goodsDetail.value.currentSkuId) {
+        Message({ type: "error", text: "加入购物车失败" });
+        return;
+      }
+      //收集商品信息
+      const goods = {
+        // 商品id
+        id: goodsDetail.value.id,
+        // 商品 skuId
+        skuId: goodsDetail.value.currentSkuId,
+        // 商品名称
+        name: goodsDetail.value.name,
+        // 商品规格属性文字
+        attrsText: goodsDetail.value.currentAttrsText,
+        // 商品图片
+        picture: goodsDetail.value.mainPictures[0],
+        // 商品原价
+        price: goodsDetail.value.oldPrice,
+        // 商品现价
+        nowPrice: goodsDetail.value.price,
+        // 是否选中
+        selected: true,
+        // 商品库存
+        stock: goodsDetail.value.inventory,
+        // 用户选择的商品数量
+        count: count.value,
+        // 是否为有效商品
+        isEffective: true,
+      };
+
+      console.log(goods);
+    };
+
     //返回
-    return { count, goodsDetail, onSpecChanged, goodsId };
+    return { count, goodsDetail, onSpecChanged, goodsId, addGoodsToCart };
   },
 };
 

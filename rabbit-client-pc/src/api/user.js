@@ -71,3 +71,36 @@ export function bindMobleAndQQ({ mobile, code, unionId }) {
 export function checkUsernameIsUnique(account) {
   return request("/register/check", "get", { account });
 }
+
+/**
+ * 获取手机验证码(完善账号)
+ * @param mobile 手机号
+ * @returns {Promise}
+ */
+export function getMsgCodeByRegister(mobile) {
+  return request("/register/code", "get", { mobile });
+}
+
+/**
+ * 注册新账号并绑定手机号
+ * @param account 账号
+ * @param mobile 手机号
+ * @param code 验证码
+ * @param password 密码
+ * @param unionId openId
+ * @returns {Promise}
+ */
+export function registerAndBindQQ({
+  account,
+  mobile,
+  code,
+  password,
+  unionId,
+}) {
+  return request(`/login/social/${unionId}/complement`, "post", {
+    account,
+    mobile,
+    code,
+    password,
+  });
+}

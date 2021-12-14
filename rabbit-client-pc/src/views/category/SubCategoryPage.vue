@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { ref, watch, onUpdated } from "vue";
+import { ref, watch } from "vue";
 import { useRoute, onBeforeRouteUpdate } from "vue-router";
 import { useStore } from "vuex";
 import { computed } from "vue";
@@ -69,9 +69,7 @@ export default {
     //获取商品列表
     const { goodsList, onFilterSortChanged, loading, finished, loadMore } =
       useGoods();
-    onUpdated(() => {
-      console.log(goodsList.value);
-    });
+
     //返回数据
     return {
       category,
