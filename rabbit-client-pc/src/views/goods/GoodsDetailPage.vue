@@ -84,6 +84,7 @@ import GoodsTab from "@/views/goods/components/GoodsTab";
 import GoodsHot from "@/views/goods/components/GoodsHot";
 import GoodsWarn from "@/views/goods/components/GoodsWarn";
 import Message from "@/components/library/message";
+import { useStore } from "vuex";
 
 export default {
   name: "GoodsDetailPage",
@@ -105,6 +106,8 @@ export default {
     const count = ref(1);
     //引入路由参数
     const route = useRoute();
+    //引入store
+    const store = useStore();
     //获取方法返回参数
     const { goodsDetail, getData } = useGoodsDetail();
     //请求接口函数
@@ -154,8 +157,8 @@ export default {
         // 是否为有效商品
         isEffective: true,
       };
-
-      console.log(goods);
+      //存到store中
+      store.dispatch("cart/addGoodsToCart", goods);
     };
 
     //返回
