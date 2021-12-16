@@ -1,5 +1,7 @@
 //购物车模块状态
 
+import { updateGoodsOfCartBySkuId } from "@/api/cart";
+
 const cart = {
   namespaced: true,
   state() {
@@ -13,7 +15,6 @@ const cart = {
     addGoodsToCart(state, goods) {
       //查看当前商品是否已经在购物车中
       const index = state.list.findIndex((item) => item.skuId === goods.skuId);
-      console.log(index);
       if (index > -1) {
         //找到 累加商品数量
         state.list[index].count += goods.count;
@@ -38,6 +39,17 @@ const cart = {
         ];
       }
     },
+    //根据skuId 更新商品信息
+    updateGoodsBySkuId(state, partOfGoods) {
+      const index = state.list.findIndex(
+        (item) => (item.skuId = partOfGoods.skuId)
+      );
+      //更新商品
+      state.list[index] = {
+        ...state.list[index],
+        ...partOfGoods,
+      };
+    },
   },
   actions: {
     //将商品加入购物车
@@ -61,6 +73,24 @@ const cart = {
         commit("deleteGoodsOfCart", skuId);
       }
     },
+    //更新购物车中的商品信息(自动更新)
+    updateGoodsBySkuId({ rootState, state, commit }) {
+      //判断用户是否登录
+      if (rootState.user.profile.token) {
+        //已登录
+      } else {
+        //未登录 发送请求 发起promise请求更新商品信息
+        const promiseAry = state.list.map((item) =>
+          updateGoodsOfCartBySkuId(item.skuId)
+        );
+        Promise.all(promiseAry).then((data) => {
+          data.forEach((item, index) => {
+            item.result.skuId = state.list[index].skuId;
+            commit("updateGoodsBySkuId", item.result);
+          });
+        });
+      }
+    },
   },
   getters: {
     //可购买的商品列表
@@ -79,6 +109,28 @@ const cart = {
     //可购买的商品总数
     effectiveGoodsCount(state, getters) {
       return getters.effectiveGoodsList.reduce((count, item) => {
+        return count + item.count;
+      }, 0);
+    },
+
+    //无效商品列表
+    invalidGoodsList(state) {
+      //库存为0
+      return state.list.filter((item) => item.stock === 0 || !item.isEffective);
+    },
+    //用户选择的商品列表
+    selectedGoodsList(state, getters) {
+      return getters.effectiveGoodsList.filter((item) => item.selected);
+    },
+    //用户选择的商品总价
+    selectedGoodsPrice(state, getters) {
+      return getters.selectedGoodsList.reduce((price, item) => {
+        return price + item.count * Number(item.nowPrice);
+      }, 0);
+    },
+    //用户选择的商品数量
+    selectedGoodsCount(state, getters) {
+      return getters.selectedGoodsList.reduce((count, item) => {
         return count + item.count;
       }, 0);
     },

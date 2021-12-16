@@ -15,6 +15,9 @@ const LoginPage = () => import("@/views/login/LoginPage");
 
 const LoginCallbackPage = () => import("@/views/login/LoginCallbackPage");
 
+//引入购物车
+const CartPage = () => import("@/views/cart/CartPage");
+
 const routes = [
   {
     path: "/",
@@ -39,6 +42,10 @@ const routes = [
   {
     path: "/login/callback",
     component: LoginCallbackPage,
+  },
+  {
+    path: "/cart",
+    component: CartPage,
   },
 ];
 

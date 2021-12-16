@@ -67,7 +67,7 @@
 
 <script>
 import { ref, provide } from "vue";
-import { useRoute } from "vue-router";
+import { onBeforeRouteUpdate, useRoute } from "vue-router";
 //引入组件
 import GoodsInfo from "@/views/goods/components/GoodsInfo";
 import GoodsSales from "@/views/goods/components/GoodsSales";
@@ -178,6 +178,11 @@ function useGoodsDetail() {
       goodsDetail.value = data.result;
     });
   };
+  //更新路由 刷新页面
+  onBeforeRouteUpdate((to) => {
+    //重新发送请求 刷新页面
+    getData(to.params.id);
+  });
   // 返回商品详情数据和获取商品详情数据的方法
   return { goodsDetail, getData };
 }
