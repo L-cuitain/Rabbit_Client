@@ -46,7 +46,6 @@ export default {
   },
   setup(props, { emit }) {
     const pathMap = createPathMap(props.skus);
-    console.log(pathMap);
     //更新规格的选中状态
     const updateSpecSelected = (specs, value) => {
       //如果按钮是禁选的，直接返回不让用户更改当前规格的是否选中状态

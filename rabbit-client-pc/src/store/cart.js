@@ -21,7 +21,6 @@ const cart = {
         //将该商品添加到购物车顶部
         state.list.unshift(state.list.splice(index, 1)[0]);
       } else {
-        console.log(goods);
         //没找到 直接将商品添加到购物车列表顶部
         state.list.unshift(goods);
       }
@@ -42,7 +41,7 @@ const cart = {
     //根据skuId 更新商品信息
     updateGoodsBySkuId(state, partOfGoods) {
       const index = state.list.findIndex(
-        (item) => (item.skuId = partOfGoods.skuId)
+        (item) => item.skuId === partOfGoods.skuId
       );
       //更新商品
       state.list[index] = {
@@ -79,6 +78,7 @@ const cart = {
       if (rootState.user.profile.token) {
         //已登录
       } else {
+        console.log(state.list);
         //未登录 发送请求 发起promise请求更新商品信息
         const promiseAry = state.list.map((item) =>
           updateGoodsOfCartBySkuId(item.skuId)
@@ -86,7 +86,31 @@ const cart = {
         Promise.all(promiseAry).then((data) => {
           data.forEach((item, index) => {
             item.result.skuId = state.list[index].skuId;
+
             commit("updateGoodsBySkuId", item.result);
+          });
+        });
+      }
+    },
+    //更新购物车商品选中信息(手动更新)
+    updateGoodsOfCartBySkuId({ rootState, commit }, partOfGoods) {
+      if (rootState.user.profile.token) {
+        //已登录
+      } else {
+        //未登录
+        commit("updateGoodsBySkuId", partOfGoods);
+      }
+    },
+    //实现全选和全不选
+    selectedAll({ rootState, state, commit }, isSelected) {
+      if (rootState.user.profile.token) {
+        //已登录
+      } else {
+        //未登录
+        state.list.forEach((item) => {
+          commit("updateGoodsBySkuId", {
+            skuId: item.skuId,
+            selected: isSelected,
           });
         });
       }
@@ -133,6 +157,14 @@ const cart = {
       return getters.selectedGoodsList.reduce((count, item) => {
         return count + item.count;
       }, 0);
+    },
+    //计算全选按钮的状态
+    selectedAllButtonStatus(state, getters) {
+      //有效商品数量大于0
+      return (
+        getters.effectiveGoodsCount > 0 &&
+        getters.selectedGoodsCount === getters.effectiveGoodsCount
+      );
     },
   },
 };

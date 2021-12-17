@@ -10,7 +10,15 @@
           <table>
             <thead>
               <tr>
-                <th><XtxCheckbox>全选</XtxCheckbox></th>
+                <th>
+                  <XtxCheckbox
+                    :modelValue="selectAllButtonStatus"
+                    @update:modelValue="
+                      $store.dispatch('cart/selectedAll', $event)
+                    "
+                    >全选</XtxCheckbox
+                  >
+                </th>
                 <th>商品信息</th>
                 <th>单价</th>
                 <th>数量</th>
@@ -20,8 +28,23 @@
             </thead>
             <!-- 有效商品 -->
             <tbody>
-              <tr v-for="item in effectiveGoodsList" :key="item.id">
-                <td><XtxCheckbox /></td>
+              <tr v-if="effectiveGoodsCount === 0">
+                <td colspan="6">
+                  <EmptyCart />
+                </td>
+              </tr>
+              <tr v-else v-for="item in effectiveGoodsList" :key="item.id">
+                <td>
+                  <XtxCheckbox
+                    :modelValue="item.selected"
+                    @update:modelValue="
+                      $store.dispatch('cart/updateGoodsOfCartBySkuId', {
+                        skuId: item.skuId,
+                        selected: $event,
+                      })
+                    "
+                  />
+                </td>
                 <td>
                   <div class="goods">
                     <RouterLink :to="`/goods/${item.id}`"
@@ -54,7 +77,14 @@
                 </td>
                 <td class="tc">
                   <p><a href="javascript:">移入收藏夹</a></p>
-                  <p><a class="green" href="javascript:">删除</a></p>
+                  <p>
+                    <a
+                      class="green"
+                      href="javascript:"
+                      @click="deleteGoodsOfCartBySkuId(item.skuId)"
+                      >删除</a
+                    >
+                  </p>
                   <p><a href="javascript:">找相似</a></p>
                 </td>
               </tr>
@@ -89,7 +119,9 @@
                   </p>
                 </td>
                 <td class="tc">
-                  <p><a class="green" href="javascript:">删除</a></p>
+                  <p>
+                    <a class="green" href="javascript:">删除</a>
+                  </p>
                   <p><a href="javascript:">找相似</a></p>
                 </td>
               </tr>
@@ -119,12 +151,15 @@
 </template>
 <script>
 import GoodsRelevant from "@/views/goods/components/GoodsRelevant";
+import EmptyCart from "@/views/cart/components/EmptyCart";
 import AppLayout from "@/components/AppLayout";
 import { useStore } from "vuex";
 import { computed } from "vue";
+import Confirm from "@/components/library/confirm";
+
 export default {
   name: "CartPage",
-  components: { GoodsRelevant, AppLayout },
+  components: { GoodsRelevant, AppLayout, EmptyCart },
   setup() {
     //获取store
     const store = useStore();
@@ -150,12 +185,29 @@ export default {
     const selectedGoodsCount = computed(
       () => store.getters["cart/selectedGoodsCount"]
     );
+    //获取全选按钮状态
+    const selectAllButtonStatus = computed(
+      () => store.getters["cart/selectedAllButtonStatus"]
+    );
+    //删除购物车项
+    const deleteGoodsOfCartBySkuId = (skuId) => {
+      Confirm({
+        content: "确认删除？",
+      })
+        .then(() => {
+          store.dispatch("cart/deleteGoodsOfCart", skuId);
+        })
+        .catch(() => {});
+    };
+
     return {
       effectiveGoodsList,
       effectiveGoodsCount,
       invalidGoodsList,
       selectedGoodsPrice,
       selectedGoodsCount,
+      selectAllButtonStatus,
+      deleteGoodsOfCartBySkuId,
     };
   },
 };
