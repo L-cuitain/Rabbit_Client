@@ -1,6 +1,10 @@
 //购物车模块状态
 
-import { updateGoodsOfCartBySkuId } from "@/api/cart";
+import {
+  getServerCart,
+  mergeServerCart,
+  updateGoodsOfCartBySkuId,
+} from "@/api/cart";
 
 const cart = {
   namespaced: true,
@@ -49,6 +53,10 @@ const cart = {
         ...partOfGoods,
       };
     },
+    //设置状态
+    setCart(state, payload) {
+      state.list = payload;
+    },
   },
   actions: {
     //将商品加入购物车
@@ -73,12 +81,14 @@ const cart = {
       }
     },
     //更新购物车中的商品信息(自动更新)
-    updateGoodsBySkuId({ rootState, state, commit }) {
+    async updateGoodsBySkuId({ rootState, state, commit }) {
       //判断用户是否登录
       if (rootState.user.profile.token) {
         //已登录
+        let data = await getServerCart();
+        console.log(data);
+        commit("setCart", data.result);
       } else {
-        console.log(state.list);
         //未登录 发送请求 发起promise请求更新商品信息
         const promiseAry = state.list.map((item) =>
           updateGoodsOfCartBySkuId(item.skuId)
@@ -114,6 +124,59 @@ const cart = {
           });
         });
       }
+    },
+    //批量删除用户选择商品、清空无效商品
+    deleteManyGoodsOfCart({ rootState, getters, commit }, flag) {
+      //判断用户是否登录
+      if (rootState.user.profile.token) {
+        //已登录
+      } else {
+        //未登录
+        getters[flag].forEach((item) => {
+          commit("deleteGoodsOfCart", item.skuId);
+        });
+      }
+    },
+    //修改商品规格信息
+    updateGoodsOfCartBySkuChanged(
+      { rootState, state, commit },
+      { oldSkuId, newSku }
+    ) {
+      if (rootState.user.profile.token) {
+        //已登录
+      } else {
+        //未登录
+        //通过 oldSkuId 查找原有商品
+        const oldGoodsIndex = state.list.findIndex(
+          (item) => item.skuId === oldSkuId
+        );
+        //通过 newSku 构建新的商品信息
+        const newGoods = {
+          ...state.list[oldGoodsIndex],
+          skuId: newSku.skuId,
+          stock: newSku.inventory,
+          oldPrice: newSku.oldPrice,
+          nowPrice: newSku.price,
+          attrsText: newSku.attrsText,
+        };
+        //删除旧商品
+        commit("deleteGoodsOfCart", oldSkuId);
+        //插入新商品
+        commit("addGoodsToCart", newGoods);
+      }
+    },
+    //合并购物车
+    async mergeCart({ state, commit }) {
+      //不需要判断用户是否登录
+      const cart = state.list.map((item) => ({
+        skuId: item.skuId,
+        selected: item.selected,
+        count: item.count,
+      }));
+
+      await mergeServerCart(cart);
+      //清空本地购物车
+      commit("setCart", []);
     },
   },
   getters: {

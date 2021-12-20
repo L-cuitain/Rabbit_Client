@@ -2,12 +2,12 @@
   <div class="xtx-confirm">
     <div class="wrapper">
       <div class="header">
-        <h3>温馨提示</h3>
+        <h3>{{ title }}</h3>
         <a href="JavaScript:" class="iconfont icon-close-new"></a>
       </div>
       <div class="body">
         <i class="iconfont icon-warning"></i>
-        <span>您确认从购物车删除该商品吗？</span>
+        <span>{{ content }}</span>
       </div>
       <div class="footer">
         <XtxButton size="mini" type="gray" @click="onCancelButtonClick"

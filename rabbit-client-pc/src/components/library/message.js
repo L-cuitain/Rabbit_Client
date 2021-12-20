@@ -23,6 +23,6 @@ export default function Message({ type, text }) {
     // render(null, container);
     vNode.component.proxy.show = false;
     //重置container中的_vNode 否则弹出框下一次不会出现
-    container._vNode = null;
+    container._vnode = null;
   }, 3000);
 }

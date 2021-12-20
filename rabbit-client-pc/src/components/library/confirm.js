@@ -41,6 +41,6 @@ export default function Confirm({ title, content }) {
     setTimeout(() => {
       vNode.el.classList.add("fade");
       vNode.el.children[0].classList.add("fade");
-    }, 0);
+    });
   });
 }

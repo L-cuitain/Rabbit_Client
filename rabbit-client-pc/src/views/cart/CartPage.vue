@@ -55,6 +55,10 @@
                         {{ item.name }}
                       </p>
                       <!-- 选择规格组件 -->
+                      <CartSku
+                        :attrsText="item.attrsText"
+                        :skuId="item.skuId"
+                      />
                     </div>
                   </div>
                 </td>
@@ -68,7 +72,16 @@
                   </p>
                 </td>
                 <td class="tc">
-                  <XtxNumberBox></XtxNumberBox>
+                  <XtxNumberBox
+                    :max="item.stock"
+                    :modelValue="item.count"
+                    @update:modelValue="
+                      $store.dispatch('cart/updateGoodsOfCartBySkuId', {
+                        skuId: item.skuId,
+                        count: $event,
+                      })
+                    "
+                  ></XtxNumberBox>
                 </td>
                 <td class="tc">
                   <p class="f16 red">
@@ -132,9 +145,15 @@
         <div class="action">
           <div class="batch">
             <XtxCheckbox>全选</XtxCheckbox>
-            <a href="javascript:">删除商品</a>
+            <a
+              @click="deleteGoodsOfCart('selectedGoodsList')"
+              href="javascript:"
+              >删除商品</a
+            >
             <a href="javascript:">移入收藏夹</a>
-            <a href="javascript:">清空失效商品</a>
+            <a @click="deleteGoodsOfCart('invalidGoodsList')" href="javascript:"
+              >清空失效商品</a
+            >
           </div>
           <div class="total">
             共 {{ effectiveGoodsCount }} 件商品，已选择
@@ -156,10 +175,12 @@ import AppLayout from "@/components/AppLayout";
 import { useStore } from "vuex";
 import { computed } from "vue";
 import Confirm from "@/components/library/confirm";
+import Message from "@/components/library/message";
+import CartSku from "@/views/cart/components/CartSku";
 
 export default {
   name: "CartPage",
-  components: { GoodsRelevant, AppLayout, EmptyCart },
+  components: { CartSku, GoodsRelevant, AppLayout, EmptyCart },
   setup() {
     //获取store
     const store = useStore();
@@ -199,6 +220,28 @@ export default {
         })
         .catch(() => {});
     };
+    //删除商品
+    const deleteGoodsOfCart = (flag) => {
+      let content = "";
+      if (flag === "selectedGoodsList") {
+        if (selectedGoodsCount.value === 0) {
+          Message({ type: "warn", text: "至少选中一项商品" });
+          return;
+        }
+        //批量删除用户选择商品
+        content = "确定删除选中商品吗";
+      } else if (flag === "invalidGoodsList") {
+        if (invalidGoodsList.value.length === 0) {
+          Message({ type: "warn", text: "没有无效商品" });
+          return;
+        }
+        //删除无效商品
+        content = "确定删除无效商品吗";
+      }
+      Confirm({ content }).then(() => {
+        store.dispatch("cart/deleteManyGoodsOfCart", flag);
+      });
+    };
 
     return {
       effectiveGoodsList,
@@ -208,6 +251,7 @@ export default {
       selectedGoodsCount,
       selectAllButtonStatus,
       deleteGoodsOfCartBySkuId,
+      deleteGoodsOfCart,
     };
   },
 };
