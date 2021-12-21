@@ -1,9 +1,13 @@
 //购物车模块状态
 
 import {
+  addGoodsToServerCart,
   getServerCart,
   mergeServerCart,
   updateGoodsOfCartBySkuId,
+  deleteGoodsOfServerCart,
+  updateGoodsOfServerCart,
+  selectedOrNotSelected,
 } from "@/api/cart";
 
 const cart = {
@@ -60,21 +64,27 @@ const cart = {
   },
   actions: {
     //将商品加入购物车
-    addGoodsToCart({ rootState, commit }, goods) {
+    async addGoodsToCart({ rootState, commit, dispatch }, goods) {
       //如果要加入购物车商品已经在购物车中，累加该商品的数量
       //新添加到购物车到商品显示到购物车列表顶部
       //判断用户是否登录 登录操作服务器端购物车 没登录操作本地购物车
       if (rootState.user.profile.token) {
         //已登录
+        await addGoodsToServerCart({ skuId: goods.skuId, count: goods.count });
+        //将服务器端最新购物车列表同步到本地
+        dispatch("updateGoodsBySkuId");
       } else {
         //未登录
         commit("addGoodsToCart", goods);
       }
     },
     //删除购物车中的商品(skuId)
-    deleteGoodsOfCart({ rootState, commit }, skuId) {
+    async deleteGoodsOfCart({ rootState, commit, dispatch }, skuId) {
       if (rootState.user.profile.token) {
         //已登录
+        await deleteGoodsOfServerCart([skuId]);
+        //将服务器端最新购物车列表同步到本地
+        dispatch("updateGoodsBySkuId");
       } else {
         //未登录
         commit("deleteGoodsOfCart", skuId);
@@ -103,18 +113,32 @@ const cart = {
       }
     },
     //更新购物车商品选中信息(手动更新)
-    updateGoodsOfCartBySkuId({ rootState, commit }, partOfGoods) {
+    async updateGoodsOfCartBySkuId(
+      { rootState, commit, dispatch },
+      partOfGoods
+    ) {
       if (rootState.user.profile.token) {
         //已登录
+        await updateGoodsOfServerCart(partOfGoods);
+        //将服务器端最新购物车列表同步到本地
+        dispatch("updateGoodsBySkuId");
       } else {
         //未登录
         commit("updateGoodsBySkuId", partOfGoods);
       }
     },
     //实现全选和全不选
-    selectedAll({ rootState, state, commit }, isSelected) {
+    async selectedAll(
+      { rootState, state, getters, commit, dispatch },
+      isSelected
+    ) {
       if (rootState.user.profile.token) {
         //已登录
+        const ids = getters.effectiveGoodsList.map((item) => item.skuId);
+        //向服务器端发送请求 更改选中状态
+        await selectedOrNotSelected({ selected: isSelected, ids });
+        //将服务器端最新购物车列表同步到本地
+        dispatch("updateGoodsBySkuId");
       } else {
         //未登录
         state.list.forEach((item) => {
@@ -126,10 +150,19 @@ const cart = {
       }
     },
     //批量删除用户选择商品、清空无效商品
-    deleteManyGoodsOfCart({ rootState, getters, commit }, flag) {
+    async deleteManyGoodsOfCart(
+      { rootState, getters, commit, dispatch },
+      flag
+    ) {
       //判断用户是否登录
       if (rootState.user.profile.token) {
         //已登录
+        //收集要删除的商品skuId
+        const ids = getters[flag].map((item) => item.skuId);
+        //发送请求进行删除
+        await deleteGoodsOfServerCart(ids);
+        //更新本地购物车列表
+        dispatch("updateGoodsBySkuId");
       } else {
         //未登录
         getters[flag].forEach((item) => {
@@ -138,18 +171,28 @@ const cart = {
       }
     },
     //修改商品规格信息
-    updateGoodsOfCartBySkuChanged(
-      { rootState, state, commit },
+    async updateGoodsOfCartBySkuChanged(
+      { rootState, state, commit, dispatch },
       { oldSkuId, newSku }
     ) {
+      //通过 oldSkuId 查找原有商品
+      const oldGoodsIndex = state.list.findIndex(
+        (item) => item.skuId === oldSkuId
+      );
+
       if (rootState.user.profile.token) {
         //已登录
+        //删除原有商品
+        await deleteGoodsOfServerCart([oldSkuId]);
+        //添加新商品
+        await addGoodsToServerCart({
+          skuId: newSku.skuId,
+          count: state.list[oldGoodsIndex].count,
+        });
+        //更新本地购物车列表
+        dispatch("updateGoodsBySkuId");
       } else {
         //未登录
-        //通过 oldSkuId 查找原有商品
-        const oldGoodsIndex = state.list.findIndex(
-          (item) => item.skuId === oldSkuId
-        );
         //通过 newSku 构建新的商品信息
         const newGoods = {
           ...state.list[oldGoodsIndex],

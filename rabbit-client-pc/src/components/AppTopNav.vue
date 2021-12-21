@@ -41,6 +41,8 @@ export default {
     const account = computed(() => store.state.user.profile.account);
     const logout = () => {
       store.commit("user/setUser", {});
+      //清空本地购物车数据
+      store.commit("cart/setCart", []);
       router.push("/login");
     };
     return { token, account, logout };

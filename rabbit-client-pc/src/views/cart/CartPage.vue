@@ -159,7 +159,9 @@
             共 {{ effectiveGoodsCount }} 件商品，已选择
             {{ selectedGoodsCount }} 件，商品合计：
             <span class="red">¥{{ selectedGoodsPrice }}</span>
-            <XtxButton type="primary">下单结算</XtxButton>
+            <XtxButton type="primary" @click="jumpToCheckout"
+              >下单结算</XtxButton
+            >
           </div>
         </div>
         <!-- 猜你喜欢 -->
@@ -177,6 +179,7 @@ import { computed } from "vue";
 import Confirm from "@/components/library/confirm";
 import Message from "@/components/library/message";
 import CartSku from "@/views/cart/components/CartSku";
+import { useRouter } from "vue-router";
 
 export default {
   name: "CartPage",
@@ -184,6 +187,8 @@ export default {
   setup() {
     //获取store
     const store = useStore();
+    //获取路由对象
+    const router = useRouter();
     //更新商品购物车数据
     store.dispatch("cart/updateGoodsBySkuId");
     //有效商品列表
@@ -242,7 +247,16 @@ export default {
         store.dispatch("cart/deleteManyGoodsOfCart", flag);
       });
     };
-
+    //跳转到结算页面
+    const jumpToCheckout = () => {
+      //判断购物车是否存在已选择到商品
+      if (selectedGoodsCount.value === 0) {
+        Message({ type: "warn", text: "请选择商品" });
+        return;
+      }
+      //跳转到结算页面
+      router.push("/checkout/order");
+    };
     return {
       effectiveGoodsList,
       effectiveGoodsCount,
@@ -252,6 +266,7 @@ export default {
       selectAllButtonStatus,
       deleteGoodsOfCartBySkuId,
       deleteGoodsOfCart,
+      jumpToCheckout,
     };
   },
 };

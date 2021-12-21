@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory } from "vue-router";
+import authGuard from "@/router/authGuard";
 
 //引入HomePage
 const HomePage = () => import("@/views/home/HomePage");
@@ -17,6 +18,9 @@ const LoginCallbackPage = () => import("@/views/login/LoginCallbackPage");
 
 //引入购物车
 const CartPage = () => import("@/views/cart/CartPage");
+
+//引入购物车结算
+const CheckoutPage = () => import("@/views/pay/CheckoutPage");
 
 const routes = [
   {
@@ -47,6 +51,10 @@ const routes = [
     path: "/cart",
     component: CartPage,
   },
+  {
+    path: "/checkout/order",
+    component: CheckoutPage,
+  },
 ];
 
 const router = createRouter({
@@ -57,5 +65,7 @@ const router = createRouter({
   },
   routes,
 });
+
+router.beforeEach(authGuard);
 
 export default router;
