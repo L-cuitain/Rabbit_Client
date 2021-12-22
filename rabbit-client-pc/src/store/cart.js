@@ -96,7 +96,6 @@ const cart = {
       if (rootState.user.profile.token) {
         //已登录
         let data = await getServerCart();
-        console.log(data);
         commit("setCart", data.result);
       } else {
         //未登录 发送请求 发起promise请求更新商品信息

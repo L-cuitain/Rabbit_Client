@@ -31,12 +31,15 @@ export default function useLoginAfter() {
     //提示用户登录成功
     Message({ type: "success", text: "登录成功" });
     //合并购物车
-    store.dispatch("cart/mergeCart").catch((error) => {
-      console.log(error);
-    });
-    store.dispatch("cart/updateGoodsBySkuId").catch((error) => {
-      console.log(error);
-    });
+    store
+      .dispatch("cart/mergeCart")
+      .then(() => {
+        //从服务器获取购物车列表
+        return store.dispatch("cart/updateGoodsBySkuId");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const loginFail = () => {
