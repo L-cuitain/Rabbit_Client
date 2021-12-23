@@ -11,7 +11,7 @@
           <!-- 收货地址 -->
           <h3 class="box-title">收货地址</h3>
           <div class="box-body">
-            <CheckoutAddress />
+            <CheckoutAddress ref="checkoutAddressInstance" />
           </div>
           <!-- 商品信息 -->
           <h3 class="box-title">商品信息</h3>
@@ -87,7 +87,7 @@
           </div>
           <!-- 提交订单 -->
           <div class="submit">
-            <XtxButton type="primary">提交订单</XtxButton>
+            <XtxButton @click="saveOrder" type="primary">提交订单</XtxButton>
           </div>
         </div>
       </div>
@@ -97,15 +97,64 @@
 <script>
 import AppLayout from "@/components/AppLayout";
 import { ref } from "vue";
-import { createOrder } from "@/api/order";
+import { createOrder, submitOrder } from "@/api/order";
 import CheckoutAddress from "@/views/pay/compnents/CheckoutAddress";
+import Message from "@/components/library/message";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 
 export default {
   name: "CheckoutPage",
   components: { CheckoutAddress, AppLayout },
   setup() {
+    //获取路由对象
+    const router = useRouter();
+    //获取store对象
+    const store = useStore();
+    //收货地址组件实例对象
+    const checkoutAddressInstance = ref();
+    //当用户点击提交订单按钮时执行
+    const saveOrder = () => {
+      //收集订单信息
+      const order = {
+        //订单商品集合
+        goods: orderInfo.value.goods.map((item) => ({
+          skuId: item.skuId,
+          count: item.count,
+        })),
+        //收货地址id
+        addressId: checkoutAddressInstance.value.finalAddress?.id,
+        //配送时间 1 不限
+        deliveryTimeType: 1,
+        //支付方式 1 在线支付 2 货到付款
+        payType: 1,
+        //支付渠道 1 支付宝 2 微信
+        payChannel: 1,
+        //买家留言
+        buyerMessage: "",
+      };
+      //判断收货地址id是否存在
+      if (!order.addressId) {
+        Message({ type: "error", text: "请添加收货地址" });
+      }
+      //提交订单
+      submitOrder(order).then((data) => {
+        //订单提交成功
+        //跳转支付成功页面 将订单id作为路由参数传递
+        router.push({
+          path: "/checkout/pay",
+          query: {
+            orderId: data.result.id,
+          },
+        });
+        //将购物车商品同步到客户端
+        store.dispatch("cart/updateGoodsBySkuId");
+      });
+    };
+
     const { orderInfo } = useOrderInfo();
-    return { orderInfo };
+
+    return { orderInfo, checkoutAddressInstance, saveOrder };
   },
 };
 

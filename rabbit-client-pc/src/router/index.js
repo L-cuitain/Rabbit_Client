@@ -22,6 +22,15 @@ const CartPage = () => import("@/views/cart/CartPage");
 //引入购物车结算
 const CheckoutPage = () => import("@/views/pay/CheckoutPage");
 
+//引入结算支付
+const PayPage = () => import("@/views/pay/PayPage");
+
+//引入支付成功
+const PayResultPage = () => import("@/views/pay/PayResultPage");
+
+//引入个人中心
+const MemberHomePage = () => import("@/views/member/home/MemberHomePage");
+
 const routes = [
   {
     path: "/",
@@ -54,6 +63,18 @@ const routes = [
   {
     path: "/checkout/order",
     component: CheckoutPage,
+  },
+  {
+    path: "/checkout/pay",
+    component: PayPage,
+  },
+  {
+    path: "/pay/callback",
+    component: PayResultPage,
+  },
+  {
+    path: "/member/home",
+    component: MemberHomePage,
   },
 ];
 

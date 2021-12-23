@@ -16,29 +16,38 @@
         </li>
         <li>
           <span>收货地址：</span
-          >{{ finalAddress.fullLocation + finalAddress.address }}
+          >{{ finalAddress.fullLocation + " " + finalAddress.address }}
         </li>
       </ul>
       <a href="javascript:" @click="modifyAddress">修改地址</a>
     </div>
     <div class="action">
-      <XtxButton class="btn">切换地址</XtxButton>
+      <XtxButton class="btn" @click="switchAddress">切换地址</XtxButton>
       <XtxButton class="btn" @click="addAddress">添加地址</XtxButton>
     </div>
   </div>
   <AddressEdit ref="addressEditInstance" @onAddressChanged="onAddressChanged" />
+  <AddressSwitch
+    ref="addressSwitchInstance"
+    @onAddressChanged="onAddressChanged"
+    :list="addresses"
+    :activeAddressId="finalAddress?.id"
+  />
 </template>
 
 <script>
 import { computed, ref } from "vue";
 import AddressEdit from "@/views/pay/compnents/AddressEdit";
 import { getAddress } from "@/api/order";
+import AddressSwitch from "@/views/pay/compnents/AddressSwitch";
 export default {
   name: "CheckoutAddress",
-  components: { AddressEdit },
+  components: { AddressSwitch, AddressEdit },
   setup() {
     //获取收货地址编辑组件的实例对象
     const addressEditInstance = ref();
+    //获取切换收货地址组件实例对象
+    const addressSwitchInstance = ref();
     const { addresses, finalAddress, onAddressChanged } = useAddressList();
     //添加收货地址
     const addAddress = () => {
@@ -71,9 +80,15 @@ export default {
         ...rest,
         isDefault: isDefault === 0,
       };
+      //获取当前选中地址
       setTimeout(() => {
         addressEditInstance.value.xtxCityInstance.location = fullLocation;
       }, 0);
+    };
+
+    //切换收货地址
+    const switchAddress = () => {
+      addressSwitchInstance.value.visible = true;
     };
     return {
       addAddress,
@@ -82,6 +97,8 @@ export default {
       finalAddress,
       modifyAddress,
       onAddressChanged,
+      addressSwitchInstance,
+      switchAddress,
     };
   },
 };
@@ -92,7 +109,6 @@ function useAddressList() {
     getAddress().then((data) => {
       //存储收货地址
       addresses.value = data.result;
-      console.log(addresses.value);
       //在调用getData方法如果传入callback，就调用callback并传递最新的收货地址
       callback && callback(data.result);
     });
