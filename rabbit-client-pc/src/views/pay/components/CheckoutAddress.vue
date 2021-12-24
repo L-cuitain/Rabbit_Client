@@ -37,9 +37,9 @@
 
 <script>
 import { computed, ref } from "vue";
-import AddressEdit from "@/views/pay/compnents/AddressEdit";
+import AddressEdit from "@/views/pay/components/AddressEdit";
 import { getAddress } from "@/api/order";
-import AddressSwitch from "@/views/pay/compnents/AddressSwitch";
+import AddressSwitch from "@/views/pay/components/AddressSwitch";
 export default {
   name: "CheckoutAddress",
   components: { AddressSwitch, AddressEdit },

@@ -31,6 +31,10 @@ const PayResultPage = () => import("@/views/pay/PayResultPage");
 //引入个人中心
 const MemberHomePage = () => import("@/views/member/home/MemberHomePage");
 
+const OrderView = () => import("@/views/member/order/OrderView");
+const OrderListPage = () => import("@/views/member/order/OrderListPage");
+const OrderDetailPage = () => import("@/views/member/order/OrderDetailPage");
+
 const routes = [
   {
     path: "/",
@@ -76,6 +80,20 @@ const routes = [
     path: "/member/home",
     component: MemberHomePage,
   },
+  {
+    path: "/member/order",
+    component: OrderView,
+    children: [
+      {
+        path: "",
+        component: OrderListPage,
+      },
+      {
+        path: ":id",
+        component: OrderDetailPage,
+      },
+    ],
+  },
 ];
 
 const router = createRouter({
@@ -85,6 +103,8 @@ const router = createRouter({
     return { top: 0 };
   },
   routes,
+  linkActiveClass: "fuzzy-active",
+  linkExactActiveClass: "exact-active",
 });
 
 router.beforeEach(authGuard);

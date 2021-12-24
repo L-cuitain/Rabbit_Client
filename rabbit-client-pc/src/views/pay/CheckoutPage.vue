@@ -98,7 +98,7 @@
 import AppLayout from "@/components/AppLayout";
 import { ref } from "vue";
 import { createOrder, submitOrder } from "@/api/order";
-import CheckoutAddress from "@/views/pay/compnents/CheckoutAddress";
+import CheckoutAddress from "@/views/pay/components/CheckoutAddress";
 import Message from "@/components/library/message";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
