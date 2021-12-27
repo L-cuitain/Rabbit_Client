@@ -1,5 +1,7 @@
 # PC端项目: 小兔鲜
 
+<img src="./images/home.png" />
+
 ## 项目简介
 
 ## 技术栈
