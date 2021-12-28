@@ -14,6 +14,8 @@
           :order="order"
           v-for="order in orderList.items"
           @onCancelButtonHandler="onCancelOrder"
+          @onReloadOrderList="getData"
+          @onLookLogistics="onLookLogistics"
           :key="order.id"
         />
       </template>
@@ -28,7 +30,8 @@
       />
     </div>
   </AppMemberLayout>
-  <CancelOrder ref="cancelOrderInstance" />
+  <CancelOrder ref="cancelOrderInstance" @onReloadOrderList="getData" />
+  <OrderLogistics ref="orderLogisticsInstance" />
 </template>
 
 <script>
@@ -41,9 +44,11 @@ import XtxTabTitle from "@/components/library/XtxTabTitle";
 import OrderItem from "@/views/member/order/components/OrderItem";
 import XtxPagination from "@/components/library/XtxPagination";
 import CancelOrder from "@/views/member/order/components/CancelOrder";
+import OrderLogistics from "@/views/member/order/components/OrderLogistics";
 export default {
   name: "OrderListPage.vue",
   components: {
+    OrderLogistics,
     CancelOrder,
     XtxPagination,
     OrderItem,
@@ -53,14 +58,24 @@ export default {
   },
   setup() {
     const current = ref(0);
-    const { orderList, reqParams, loading, counts, pages } = useOrderList();
+    const { orderList, reqParams, loading, counts, pages, getData } =
+      useOrderList();
     watch(current, () => {
       reqParams.value.orderState = current.value;
     });
     const cancelOrderInstance = ref();
     //取消订单
-    const onCancelOrder = () => {
+    const onCancelOrder = (id) => {
       cancelOrderInstance.value.visible = true;
+      cancelOrderInstance.value.id = id;
+    };
+
+    const orderLogisticsInstance = ref();
+
+    //查看物流
+    const onLookLogistics = (id) => {
+      orderLogisticsInstance.value.visible = true;
+      orderLogisticsInstance.value.id = id;
     };
     return {
       current,
@@ -72,6 +87,9 @@ export default {
       reqParams,
       onCancelOrder,
       cancelOrderInstance,
+      getData,
+      orderLogisticsInstance,
+      onLookLogistics,
     };
   },
 };
@@ -100,7 +118,7 @@ function useOrderList() {
   };
   //监听查询条件的变化，重新获取订单列表
   watch(reqParams.value, () => getData(), { immediate: true });
-  return { orderList, reqParams, loading, counts, pages };
+  return { orderList, reqParams, loading, counts, pages, getData };
 }
 </script>
 

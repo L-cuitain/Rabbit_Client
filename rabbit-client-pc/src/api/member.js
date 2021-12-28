@@ -20,7 +20,7 @@ export function getCollection({ page, pageSize, collectType = 1 }) {
  * @param page 页码
  * @param pageSize 每页显示多少条数据
  * @param orderState
- * @returns {AxiosPromise}
+ * @returns {Promise}
  */
 export function getOrderList({ page, pageSize, orderState }) {
   return requestWithToken("/member/order", "get", {
@@ -28,4 +28,43 @@ export function getOrderList({ page, pageSize, orderState }) {
     pageSize,
     orderState,
   });
+}
+
+/**
+ * 取消订单
+ * @param id 要取消的订单id
+ * @param cancelReason 取消原因
+ * @returns {Promise}
+ */
+export function cancelOrder({ id, cancelReason }) {
+  return requestWithToken(`/member/order/${id}/cancel`, "put", {
+    cancelReason,
+  });
+}
+
+/**
+ * 删除订单
+ * @param ids 订单id集合
+ * @returns {Promise}
+ */
+export function deleteOrder(ids) {
+  return requestWithToken("/member/order", "delete", { ids });
+}
+
+/**
+ * 确认收获
+ * @param id 订单id
+ * @returns {Promise}
+ */
+export function receiptGoods(id) {
+  return requestWithToken(`/member/order/${id}/receipt`, "put");
+}
+
+/**
+ * 查看订单物流信息
+ * @param id 订单id
+ * @returns {Promise}
+ */
+export function lookLogistics(id) {
+  return requestWithToken(`/member/order/${id}/logistics`, "get");
 }

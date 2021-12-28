@@ -10,7 +10,11 @@
         <i class="iconfont icon-down-time"></i>
         <b>付款截止：{{ dayjs.unix(count).format("mm分ss秒") }}</b>
       </span>
-      <a v-if="[5, 6].includes(order.orderState)" href="javascript:" class="del"
+      <a
+        @click="deleteOrderHandler(order.id)"
+        v-if="[5, 6].includes(order.orderState)"
+        href="javascript:"
+        class="del"
         >删除</a
       >
     </div>
@@ -36,7 +40,9 @@
         <!-- orderStatus是一个数组, 数组的索引和订单状态值是对应关系 -->
         <p>{{ orderStatus[order.orderState].label }}</p>
         <p v-if="order.orderState === 3">
-          <a href="javascript:" class="green">查看物流</a>
+          <a @click="lookLogistics(order.id)" href="javascript:" class="green"
+            >查看物流</a
+          >
         </p>
         <p v-if="order.orderState === 4">
           <a href="javascript:" class="green">评价商品</a>
@@ -56,10 +62,16 @@
             >立即付款</RouterLink
           ></XtxButton
         >
-        <XtxButton v-if="order.orderState === 3" type="primary" size="small"
+        <XtxButton
+          @click="receiptGoodsHandler(order.id)"
+          v-if="order.orderState === 3"
+          type="primary"
+          size="small"
           >确认收货</XtxButton
         >
-        <p><a href="javascript:">查看详情</a></p>
+        <p>
+          <RouterLink :to="`/member/order/${order.id}`">查看详情</RouterLink>
+        </p>
         <p>
           <a
             v-if="order.orderState === 1"
@@ -87,6 +99,9 @@
 import { useCountDown } from "@/hooks/useCountDown";
 import dayjs from "dayjs";
 import { orderStatus } from "@/api/constants";
+import Confirm from "@/components/library/confirm";
+import { deleteOrder, receiptGoods } from "@/api/member";
+import Message from "@/components/library/message";
 
 export default {
   name: "OrderItem",
@@ -106,7 +121,42 @@ export default {
     const onCancelButtonClick = (id) => {
       emit("onCancelButtonHandler", id);
     };
-    return { count, dayjs, orderStatus, onCancelButtonClick };
+    //删除订单
+    const deleteOrderHandler = async (id) => {
+      //和用户进行确认
+      try {
+        //和用户确认
+        await Confirm({ content: "确定要删除订单吗" });
+        //发起请求
+        await deleteOrder([id]);
+        Message({ type: "success", text: "订单删除成功" });
+        //更新列表
+        emit("onReloadOrderList");
+      } catch (error) {
+        Message({ type: "success", text: "订单删除失败" });
+      }
+    };
+    //确认收获
+    const receiptGoodsHandler = (id) => {
+      Confirm({ content: "确认收货？" })
+        .then(() => receiptGoods(id))
+        .then(() => emit("onReloadOrderList"))
+        .then(() => Message({ type: "success", text: "收货成功" }))
+        .catch(() => Message({ type: "success", text: "收货失败" }));
+    };
+
+    const lookLogistics = (id) => {
+      emit("onLookLogistics", id);
+    };
+    return {
+      count,
+      dayjs,
+      orderStatus,
+      onCancelButtonClick,
+      deleteOrderHandler,
+      receiptGoodsHandler,
+      lookLogistics,
+    };
   },
 };
 </script>

@@ -36,9 +36,12 @@ style-resources-loader:less文件自动注入
 ## 项目运行
 ```
 # 下载依赖
-npm install
+yarn install
 
 # 运行
-npm install
+yarn serve
+
+# 检查
+yarn lint
 ```
 
