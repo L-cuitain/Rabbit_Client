@@ -68,3 +68,12 @@ export function receiptGoods(id) {
 export function lookLogistics(id) {
   return requestWithToken(`/member/order/${id}/logistics`, "get");
 }
+
+/**
+ * 根据Id创建新的订单
+ * @param id 订单Id
+ * @returns {Promise}
+ */
+export function createOrderById(id) {
+  return requestWithToken(`/member/order/repurchase/${id}`, "get");
+}

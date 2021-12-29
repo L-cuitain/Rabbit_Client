@@ -4,29 +4,43 @@
       <span>{{ Logistics.list[0].text }}</span>
       <span>{{ Logistics.list[0].time }}</span>
     </p>
-    <a href="javascript:">查看物流</a>
+    <a href="javascript:" @click="lookLog">查看物流</a>
   </div>
+  <teleport to="#modal">
+    <OrderLogistics ref="orderLogisticsInstance" />
+  </teleport>
 </template>
 <script>
 import { ref } from "vue";
 import { lookLogistics } from "@/api/member";
 import { useRoute } from "vue-router";
+import OrderLogistics from "@/views/member/order/components/OrderLogistics";
 
 export default {
   name: "DetailLogistics",
+  components: { OrderLogistics },
   async setup() {
     //获取路由信息对象
     const route = useRoute();
     //用于存储物流信息
     const Logistics = ref();
+    //获取订单信息弹框组件实例对象
+    const orderLogisticsInstance = ref();
     //获取物流信息
     let data = await lookLogistics(route.params.id);
     //存储物流信息
     Logistics.value = data.result;
-
-    return { Logistics };
+    //渲染物流信息弹层组件
+    const lookLog = () => {
+      orderLogisticsInstance.value.id = route.params.id;
+      orderLogisticsInstance.value.visible = true;
+    };
+    return { Logistics, orderLogisticsInstance, lookLog };
   },
 };
+// async function delay() {
+//   await new Promise((resolve) => setTimeout(() => resolve(), time));
+// }
 </script>
 <style scoped lang="less">
 .detail-logistics {

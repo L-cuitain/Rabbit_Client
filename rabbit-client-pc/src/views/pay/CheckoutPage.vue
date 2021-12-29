@@ -100,8 +100,9 @@ import { ref } from "vue";
 import { createOrder, submitOrder } from "@/api/order";
 import CheckoutAddress from "@/views/pay/components/CheckoutAddress";
 import Message from "@/components/library/message";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
+import { createOrderById } from "@/api/member";
 
 export default {
   name: "CheckoutPage",
@@ -159,13 +160,22 @@ export default {
 };
 
 function useOrderInfo() {
+  const route = useRoute();
   //用户存储订单信息
   const orderInfo = ref();
   //用于创建订单 获取订单信息
   const getData = () => {
-    createOrder().then((data) => {
-      orderInfo.value = data.result;
-    });
+    if (route.query.orderId) {
+      //再次购买
+      createOrderById(route.query.orderId).then((data) => {
+        orderInfo.value = data.result;
+      });
+    } else {
+      //从购物车跳转
+      createOrder().then((data) => {
+        orderInfo.value = data.result;
+      });
+    }
   };
   //调用方法
   getData();

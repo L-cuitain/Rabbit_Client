@@ -2,7 +2,11 @@
   <AppMemberLayout>
     <div class="order-detail-page">
       <!-- 操作栏 -->
-      <DetailAction v-if="orderInfo" :orderInfo="orderInfo" />
+      <DetailAction
+        @onReloadOrder="getData(orderInfo.id)"
+        v-if="orderInfo"
+        :orderInfo="orderInfo"
+      />
       <!-- 步骤条-->
       <XtxSteps v-if="orderInfo" v-model:step="orderInfo.orderState">
         <XtxStepItem
@@ -22,9 +26,13 @@
       </XtxSteps>
       <!-- 物流栏 -->
       <Suspense>
-        <DetailLogistics />
+        <template v-slot:default v-if="orderInfo">
+          <DetailLogistics v-if="[3, 4, 5].includes(orderInfo.orderState)" />
+        </template>
+        <template v-slot:fallback>loading...</template>
       </Suspense>
       <!-- 订单商品信息 -->
+      <DetailOrderGoods v-if="orderInfo" :orderInfo="orderInfo" />
     </div>
   </AppMemberLayout>
 </template>
@@ -35,12 +43,18 @@ import { ref } from "vue";
 import { getOrderDetail } from "@/api/order";
 import { useRoute } from "vue-router";
 import DetailLogistics from "@/views/member/order/components/DetailLogistics";
+import DetailOrderGoods from "@/views/member/order/components/DetailOrderGooods";
 export default {
   name: "OrderDetailPage",
-  components: { DetailLogistics, DetailAction, AppMemberLayout },
+  components: {
+    DetailOrderGoods,
+    DetailLogistics,
+    DetailAction,
+    AppMemberLayout,
+  },
   setup() {
-    const { orderInfo } = useOrderInfo();
-    return { orderInfo };
+    const { orderInfo, getData } = useOrderInfo();
+    return { orderInfo, getData };
   },
 };
 // 获取订单详情信息
@@ -53,7 +67,7 @@ function useOrderInfo() {
     });
   };
   getData(route.params.id);
-  return { orderInfo };
+  return { orderInfo, getData };
 }
 </script>
 <style scoped lang="less">
