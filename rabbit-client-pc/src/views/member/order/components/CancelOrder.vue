@@ -6,13 +6,14 @@
         <p>取消订单后，本单享有的优惠可能会一并取消，是否继续？</p>
         <p class="tip">请选择取消订单的原因（必选）：</p>
         <div class="btn">
-          <a
+          <button
             @click="selected = reason"
             v-for="reason in cancelReason"
             :key="reason"
             :class="{ active: selected === reason }"
-            >{{ reason }}</a
           >
+            {{ reason }}
+          </button>
         </div>
       </div>
     </template>
@@ -38,7 +39,7 @@ export default {
     // 用于控制弹框是否显示
     const visible = ref(false);
     //用于存储用户选择的原因
-    const selected = ref("");
+    const selected = ref();
     //获取当前组件实例对象
     const { proxy } = getCurrentInstance();
     //取消订单操作
@@ -49,12 +50,13 @@ export default {
           cancelOrder({ id: proxy.id, cancelReason: selected.value });
         })
         .then(() => {
-          Message({ type: "success", text: "订单取消成功" });
           visible.value = false;
-        })
-        .then(() => {
           //重新获取订单列表
           emit("onReloadOrderList");
+          location.reload();
+        })
+        .then(() => {
+          Message({ type: "success", text: "订单取消成功" });
         })
         .catch(() => {
           Message({ type: "error", text: "订单取消失败" });
@@ -80,7 +82,7 @@ export default {
     padding-top: 21px;
     display: flex;
     flex-wrap: wrap;
-    a {
+    button {
       width: 250px;
       height: 45px;
       line-height: 45px;

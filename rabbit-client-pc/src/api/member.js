@@ -52,7 +52,7 @@ export function deleteOrder(ids) {
 }
 
 /**
- * 确认收获
+ * 确认收货
  * @param id 订单id
  * @returns {Promise}
  */

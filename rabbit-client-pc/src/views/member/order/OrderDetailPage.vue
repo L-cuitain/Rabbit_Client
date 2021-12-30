@@ -67,6 +67,7 @@ function useOrderInfo() {
     });
   };
   getData(route.params.id);
+  //监听查询条件的变化，重新获取订单列表
   return { orderInfo, getData };
 }
 </script>

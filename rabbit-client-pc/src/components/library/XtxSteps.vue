@@ -20,9 +20,6 @@ export default {
       }
     });
     const step = useVModel(props, "step", emit);
-    if (step.value === 6) {
-      step.value = 1;
-    }
     return function () {
       return (
         <div class="xtx-steps">
